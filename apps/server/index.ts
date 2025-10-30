@@ -8,7 +8,9 @@ import usersRouter from './routes/users';
 import palletPositionsRouter from './routes/palletPositions';
 import palletProductsRouter from './routes/palletProducts';
 import productsRouter from './routes/products';
-import palletActionLogsRouter from './routes/palletActionLogs'; // Importar el nuevo router
+import palletActionLogsRouter from './routes/palletActionLogs';
+import empresasRouter from './routes/empresas';
+import pagosRouter from './routes/pagos'; // Importar el nuevo router
 import { ApiError, UnauthorizedError } from './lib/errors';
 import { env } from './lib/config';
 import swaggerUi from 'swagger-ui-express';
@@ -54,7 +56,9 @@ async function createServer() {
   app.use('/api/pallet-positions', palletPositionsRouter);
   app.use('/api/pallet-products', palletProductsRouter);
   app.use('/api/products', productsRouter);
-  app.use('/api/pallet-action-logs', palletActionLogsRouter); // Usar el nuevo router
+  app.use('/api/pallet-action-logs', palletActionLogsRouter);
+  app.use('/api/empresas', empresasRouter);
+  app.use('/api/pagos', pagosRouter); // Usar el nuevo router
   app.get('/api/hello', (_req, res) => {
     res.json({ message: 'Hola desde el servidor Express!' });
   });

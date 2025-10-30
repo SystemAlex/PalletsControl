@@ -11,7 +11,7 @@ properties:
     example: Nombre Usuario
   role:
     type: string
-    enum: ['admin', 'developer', 'deposito']
+    enum: ['gerente', 'developer', 'deposito']
     example: developer
   mustChangePassword:
     type: boolean

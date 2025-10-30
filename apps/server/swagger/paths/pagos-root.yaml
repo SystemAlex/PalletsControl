@@ -1,0 +1,114 @@
+get:
+  summary: Obtener lista de pagos con paginación y búsqueda
+  tags:
+    - Pagos
+  security:
+    - cookieAuth: []
+  parameters:
+    - in: query
+      name: limit
+      schema:
+        type: integer
+        default: 20
+        minimum: 1
+        maximum: 100
+      description: Número máximo de pagos a devolver.
+    - in: query
+      name: offset
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+      description: Número de pagos a omitir.
+    - in: query
+      name: search
+      schema:
+        type: string
+      description: Término de búsqueda para observaciones o método.
+    - in: query
+      name: idEmpresa
+      schema:
+        type: integer
+      description: Filtrar por ID de Empresa.
+  responses:
+    '200':
+      description: Lista de pagos recuperada exitosamente
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              pagos:
+                type: array
+                items:
+                  $ref: '../schemas/PagoRecord.yaml'
+              totalCount:
+                type: integer
+                example: 10
+    '400':
+      description: Parámetros de consulta inválidos
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '401':
+      description: No autorizado / Usuario sin rol de administrador
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '500':
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+post:
+  summary: Registrar un nuevo pago
+  tags:
+    - Pagos
+  security:
+    - cookieAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/CreatePagoRequest.yaml'
+  responses:
+    '201':
+      description: Pago registrado exitosamente
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Pago registrado exitosamente
+              pago:
+                $ref: '../schemas/PagoRecord.yaml'
+    '400':
+      description: Datos de pago inválidos
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '401':
+      description: No autorizado / Usuario sin rol de administrador
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '404':
+      description: Empresa no encontrada
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '500':
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'

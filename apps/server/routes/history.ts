@@ -17,7 +17,7 @@ router.get('/login', verifyToken, renewToken, async (req: AuthRequest, res, next
       throw new UnauthorizedError('Usuario no autenticado');
     }
 
-    const endpointAllowedRoles = ['admin', 'developer'];
+    const endpointAllowedRoles = ['admin', 'gerente', 'developer'];
     if (!endpointAllowedRoles.includes(userRole)) {
       return res.json({ history: [], totalCount: 0 });
     }

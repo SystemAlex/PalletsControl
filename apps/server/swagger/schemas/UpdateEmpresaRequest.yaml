@@ -1,0 +1,48 @@
+type: object
+properties:
+  razonSocial:
+    type: string
+    example: 'Empresa Actualizada S.A.'
+  nombreFantasia:
+    type: string
+    nullable: true
+    example: 'Comercial Actualizado'
+  cuit:
+    type: string
+    example: '30-71234567-8'
+  direccion:
+    type: string
+    nullable: true
+    example: 'Av. Principal 456'
+  ciudad:
+    type: string
+    nullable: true
+    example: 'Buenos Aires'
+  provincia:
+    type: string
+    nullable: true
+    example: 'CABA'
+  pais:
+    type: string
+    nullable: true
+    example: 'Argentina'
+  telefono:
+    type: string
+    nullable: true
+    example: '+54 11 9876-5432'
+  email:
+    type: string
+    format: email
+    nullable: true
+    example: 'contacto.nuevo@ejemplo.com'
+  sitioWeb:
+    type: string
+    nullable: true
+    example: 'www.ejemplo-nuevo.com'
+  sector:
+    type: string
+    nullable: true
+    example: 'Finanzas'
+  activo:
+    type: boolean
+    example: false

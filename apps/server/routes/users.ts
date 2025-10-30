@@ -23,7 +23,7 @@ router.get('/active', verifyToken, renewToken, async (req: AuthRequest, res, nex
   try {
     const userRole = req.user?.role as UserRole;
 
-    const allowedRolesForActiveUsers = ['admin', 'developer'];
+    const allowedRolesForActiveUsers = ['admin', 'gerente', 'developer'];
     if (!userRole || !allowedRolesForActiveUsers.includes(userRole)) {
       throw new UnauthorizedError('No tienes permiso para ver esta información');
     }

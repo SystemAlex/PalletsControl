@@ -1,8 +1,8 @@
-export type UserRole = 'admin' | 'developer' | 'deposito';
+export type UserRole = 'admin' | 'gerente' | 'developer' | 'deposito';
 
-export const allAvailableRoles = ['admin', 'developer', 'deposito'] as const;
+export const allAvailableRoles = ['admin', 'gerente', 'developer', 'deposito'] as const;
 
-export const roleHierarchy: UserRole[] = ['admin', 'developer', 'deposito'];
+export const roleHierarchy: UserRole[] = ['admin', 'gerente', 'developer', 'deposito'];
 
 export const getRoleHierarchyIndex = (role: UserRole): number => {
   const index = roleHierarchy.indexOf(role);

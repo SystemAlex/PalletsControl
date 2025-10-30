@@ -51,51 +51,6 @@ async function seed() {
         isActive: true,
       },
       {
-        username: 'supervisor_test_1',
-        realname: 'Supervisor de Prueba 1',
-        email: 'supervisor1@test.com',
-        passwordHash: await bcrypt.hash('Clave123', 10),
-        role: 'supervisor',
-        mustChangePassword: true,
-        isActive: true,
-      },
-      {
-        username: 'supervisor_test_2',
-        realname: 'Supervisor de Prueba 2',
-        email: 'supervisor2@test.com',
-        passwordHash: await bcrypt.hash('Clave123', 10),
-        role: 'supervisor',
-        mustChangePassword: true,
-        isActive: true,
-      },
-      {
-        username: 'supervisor_test_3',
-        realname: 'Supervisor de Prueba 3',
-        email: 'supervisor3@test.com',
-        passwordHash: await bcrypt.hash('Clave123', 10),
-        role: 'supervisor',
-        mustChangePassword: true,
-        isActive: true,
-      },
-      {
-        username: 'analista_test',
-        realname: 'Analista de Prueba',
-        email: 'analista@test.com',
-        passwordHash: await bcrypt.hash('Clave123', 10),
-        role: 'analista',
-        mustChangePassword: true,
-        isActive: true,
-      },
-      {
-        username: 'mondelez_test',
-        realname: 'Usuario Mondelez',
-        email: 'mondelez@test.com',
-        passwordHash: await bcrypt.hash('Clave123', 10),
-        role: 'mondelez',
-        mustChangePassword: true,
-        isActive: true,
-      },
-      {
         username: 'deposito_test',
         realname: 'Usuario Depósito',
         email: 'deposito@test.com',
@@ -105,19 +60,6 @@ async function seed() {
         isActive: true,
       },
     ];
-
-    // Agregar 18 vendedores
-    for (let i = 1; i <= 18; i++) {
-      usersToInsert.push({
-        username: `vendedor_test_${i}`,
-        realname: `Vendedor de Prueba ${i}`,
-        email: `vendedor${i}@test.com`,
-        passwordHash: await bcrypt.hash('Clave123', 10),
-        role: 'vendedor',
-        mustChangePassword: true,
-        isActive: true,
-      });
-    }
 
     // 3. Insertar usuarios
     console.log('➕ Inserting new users...');

@@ -4,3 +4,5 @@ export * from './schemas/blockedIpSchema';
 export * from './schemas/palletSchema';
 export * from './schemas/palletProductSchema';
 export * from './schemas/palletActionLogSchema';
+export * from './schemas/empresaSchema';
+export * from './schemas/pagoSchema';

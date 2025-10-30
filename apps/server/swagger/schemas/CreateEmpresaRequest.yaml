@@ -1,0 +1,51 @@
+type: object
+required:
+  - razonSocial
+  - cuit
+properties:
+  razonSocial:
+    type: string
+    example: 'Nueva Empresa S.R.L.'
+  nombreFantasia:
+    type: string
+    nullable: true
+    example: 'Comercial Nuevo'
+  cuit:
+    type: string
+    example: '20-12345678-9'
+  direccion:
+    type: string
+    nullable: true
+    example: 'Calle Falsa 123'
+  ciudad:
+    type: string
+    nullable: true
+    example: 'Córdoba'
+  provincia:
+    type: string
+    nullable: true
+    example: 'Córdoba'
+  pais:
+    type: string
+    nullable: true
+    example: 'Argentina'
+  telefono:
+    type: string
+    nullable: true
+    example: '351 123-4567'
+  email:
+    type: string
+    format: email
+    nullable: true
+    example: 'info@nuevaempresa.com'
+  sitioWeb:
+    type: string
+    nullable: true
+    example: 'www.nuevaempresa.com'
+  sector:
+    type: string
+    nullable: true
+    example: 'Manufactura'
+  activo:
+    type: boolean
+    example: true

@@ -1,0 +1,55 @@
+type: object
+properties:
+  idEmpresa:
+    type: integer
+    example: 1
+  razonSocial:
+    type: string
+    example: 'Empresa Ejemplo S.A.'
+  nombreFantasia:
+    type: string
+    nullable: true
+    example: 'Ejemplo Comercial'
+  cuit:
+    type: string
+    example: '30-71234567-8'
+  direccion:
+    type: string
+    nullable: true
+    example: 'Av. Principal 123'
+  ciudad:
+    type: string
+    nullable: true
+    example: 'Buenos Aires'
+  provincia:
+    type: string
+    nullable: true
+    example: 'CABA'
+  pais:
+    type: string
+    nullable: true
+    example: 'Argentina'
+  telefono:
+    type: string
+    nullable: true
+    example: '+54 11 4567-8900'
+  email:
+    type: string
+    format: email
+    nullable: true
+    example: 'contacto@ejemplo.com'
+  sitioWeb:
+    type: string
+    nullable: true
+    example: 'www.ejemplo.com'
+  sector:
+    type: string
+    nullable: true
+    example: 'Tecnología'
+  fechaAlta:
+    type: string
+    format: date
+    example: '2024-01-15'
+  activo:
+    type: boolean
+    example: true

@@ -1,0 +1,144 @@
+get:
+  summary: Obtener una empresa por ID
+  tags:
+    - Empresas
+  security:
+    - cookieAuth: []
+  parameters:
+    - in: path
+      name: id
+      schema:
+        type: integer
+      required: true
+      description: ID de la empresa a obtener
+  responses:
+    '200':
+      description: Empresa recuperada exitosamente
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/EmpresaRecord.yaml'
+    '401':
+      description: No autorizado / Usuario sin rol de administrador
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '404':
+      description: Empresa no encontrada
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '500':
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+put:
+  summary: Actualizar una empresa por ID
+  tags:
+    - Empresas
+  security:
+    - cookieAuth: []
+  parameters:
+    - in: path
+      name: id
+      schema:
+        type: integer
+      required: true
+      description: ID de la empresa a actualizar
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/UpdateEmpresaRequest.yaml'
+  responses:
+    '200':
+      description: Empresa actualizada exitosamente
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Empresa actualizada exitosamente
+              empresa:
+                $ref: '../schemas/EmpresaRecord.yaml'
+    '400':
+      description: Datos de empresa inválidos
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '401':
+      description: No autorizado / Usuario sin rol de administrador
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '404':
+      description: Empresa no encontrada
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '409':
+      description: El CUIT o Email ya existe en otra empresa
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '500':
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+delete:
+  summary: Eliminar una empresa por ID
+  tags:
+    - Empresas
+  security:
+    - cookieAuth: []
+  parameters:
+    - in: path
+      name: id
+      schema:
+        type: integer
+      required: true
+      description: ID de la empresa a eliminar
+  responses:
+    '200':
+      description: Empresa eliminada exitosamente
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Empresa eliminada exitosamente
+              empresa:
+                $ref: '../schemas/EmpresaRecord.yaml'
+    '401':
+      description: No autorizado / Usuario sin rol de administrador
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '404':
+      description: Empresa no encontrada
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '500':
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'

@@ -22,7 +22,7 @@ properties:
         role:
           type: string
           enum:
-            ['admin', 'developer', 'deposito']
+            ['gerente', 'developer', 'deposito']
           example: developer
         isActive:
           type: boolean

@@ -1,0 +1,109 @@
+get:
+  summary: Obtener lista de empresas con paginación y búsqueda
+  tags:
+    - Empresas
+  security:
+    - cookieAuth: []
+  parameters:
+    - in: query
+      name: limit
+      schema:
+        type: integer
+        default: 20
+        minimum: 1
+        maximum: 100
+      description: Número máximo de empresas a devolver.
+    - in: query
+      name: offset
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+      description: Número de empresas a omitir.
+    - in: query
+      name: search
+      schema:
+        type: string
+      description: Término de búsqueda para razón social, nombre de fantasía o CUIT.
+  responses:
+    '200':
+      description: Lista de empresas recuperada exitosamente
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              empresas:
+                type: array
+                items:
+                  $ref: '../schemas/EmpresaRecord.yaml'
+              totalCount:
+                type: integer
+                example: 10
+    '400':
+      description: Parámetros de paginación inválidos
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '401':
+      description: No autorizado / Usuario sin rol de administrador
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '500':
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+post:
+  summary: Crear una nueva empresa
+  tags:
+    - Empresas
+  security:
+    - cookieAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/CreateEmpresaRequest.yaml'
+  responses:
+    '201':
+      description: Empresa creada exitosamente
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Empresa creada exitosamente
+              empresa:
+                $ref: '../schemas/EmpresaRecord.yaml'
+    '400':
+      description: Datos de empresa inválidos
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '401':
+      description: No autorizado / Usuario sin rol de administrador
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '409':
+      description: El CUIT o Email ya existe
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '500':
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'

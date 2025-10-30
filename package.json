@@ -28,7 +28,6 @@
     "db:seedTest": "tsx apps/server/db/seedTest.ts",
     "db:seedWork": "tsx apps/server/db/seedWork.ts",
     "db:seedPallets": "tsx apps/server/db/seedPalletPositions.ts",
-    "db:seedUpdate": "tsx apps/server/db/seedUpdatePalletLogs.ts",
     "check": "tsc",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

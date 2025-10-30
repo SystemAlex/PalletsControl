@@ -21,7 +21,7 @@ properties:
     example: Clave123
   role:
     type: string
-    enum: ['admin', 'developer', 'deposito']
+    enum: ['gerente', 'developer', 'deposito']
     example: deposito
   email:
     type: string

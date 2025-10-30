@@ -1,0 +1,25 @@
+type: object
+required:
+  - idEmpresa
+  - monto
+properties:
+  idEmpresa:
+    type: integer
+    example: 101
+  fechaPago:
+    type: string
+    format: date
+    nullable: true
+    example: '2024-07-20'
+  monto:
+    type: number
+    format: float
+    example: 1500.50
+  metodo:
+    type: string
+    nullable: true
+    example: 'Transferencia'
+  observaciones:
+    type: string
+    nullable: true
+    example: 'Pago por servicios de julio'

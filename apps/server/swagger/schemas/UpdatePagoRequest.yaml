@@ -1,0 +1,19 @@
+type: object
+properties:
+  fechaPago:
+    type: string
+    format: date
+    nullable: true
+    example: '2024-07-25'
+  monto:
+    type: number
+    format: float
+    example: 1600.00
+  metodo:
+    type: string
+    nullable: true
+    example: 'Efectivo'
+  observaciones:
+    type: string
+    nullable: true
+    example: 'Ajuste de monto y cambio de método'

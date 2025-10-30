@@ -30,10 +30,6 @@ paths:
     $ref: './paths/users-id-status.yaml'
   /users/{id}/reset-password:
     $ref: './paths/users-id-reset-password.yaml'
-  # Removed Chess Access and Validation paths
-  # Removed Sync paths
-  # Removed Commercial paths
-  # Removed Reports paths
   /pallet-positions:
     $ref: './paths/pallet-positions-root.yaml'
   /pallet-positions/{id}:
@@ -48,6 +44,14 @@ paths:
     $ref: './paths/products-id.yaml'
   /pallet-action-logs:
     $ref: './paths/pallet-action-logs-root.yaml'
+  /empresas:
+    $ref: './paths/empresas-root.yaml'
+  /empresas/{id}:
+    $ref: './paths/empresas-id.yaml'
+  /pagos:
+    $ref: './paths/pagos-root.yaml'
+  /pagos/{id}:
+    $ref: './paths/pagos-id.yaml'
   /hello:
     $ref: './paths/hello.yaml'
 
@@ -77,9 +81,6 @@ components:
       $ref: './schemas/UpdateUserRequest.yaml'
     ToggleStatusRequest:
       $ref: './schemas/ToggleStatusRequest.yaml'
-    # Removed Chess Access/Validation schemas
-    # Removed Sync Status schemas
-    # Removed Commercial/Client/Order/Report schemas
     ArticuloRecord:
       $ref: './schemas/ArticuloRecord.yaml'
     MessageResponse:
@@ -106,3 +107,15 @@ components:
       $ref: './schemas/PalletActionLogRecord.yaml'
     PalletActionLogsResponse:
       $ref: './schemas/PalletActionLogsResponse.yaml'
+    EmpresaRecord:
+      $ref: './schemas/EmpresaRecord.yaml'
+    CreateEmpresaRequest:
+      $ref: './schemas/CreateEmpresaRequest.yaml'
+    UpdateEmpresaRequest:
+      $ref: './schemas/UpdateEmpresaRequest.yaml'
+    PagoRecord:
+      $ref: './schemas/PagoRecord.yaml'
+    CreatePagoRequest:
+      $ref: './schemas/CreatePagoRequest.yaml'
+    UpdatePagoRequest:
+      $ref: './schemas/UpdatePagoRequest.yaml'

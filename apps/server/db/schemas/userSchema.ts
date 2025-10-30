@@ -9,7 +9,7 @@ export const users = pgTable(
     email: text('email').unique(),
     passwordHash: text('password_hash').notNull(),
     role: text('role', {
-      enum: ['admin', 'developer', 'deposito'],
+      enum: ['admin', 'gerente', 'developer', 'deposito'],
     }).notNull(),
     mustChangePassword: boolean('must_change_password').notNull().default(true),
     isActive: boolean('is_active').notNull().default(true),
