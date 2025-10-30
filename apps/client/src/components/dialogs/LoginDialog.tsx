@@ -37,7 +37,7 @@ export default function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
   const [submitAttempted, setSubmitAttempted] = useState(false);
 
   useEffect(() => {
-    document.title = 'Alquimia Web → Login';
+    document.title = 'Control Pallets → Login';
   }, []);
 
   const notify = (message: string, intent: 'success' | 'error') => {

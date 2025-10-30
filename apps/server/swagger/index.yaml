@@ -5,7 +5,7 @@ info:
   description: Documentación completa de la API de tu aplicación.
 servers:
   - url: /api
-    description: Servidor Alquimia Web
+    description: Servidor Control Pallets
 
 paths:
   /auth/register:

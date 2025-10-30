@@ -1,6 +1,6 @@
-# Alquimia Web: Control de Pallets y Gestión de Usuarios
+# Control de Pallets y Gestión de Usuarios
 
-Alquimia Web es una plataforma simplificada, enfocada en la administración de usuarios y el control de inventario en posiciones de pallet.
+La Web es una plataforma simplificada, enfocada en la administración de usuarios y el control de inventario en posiciones de pallet.
 
 ### Logros y Características Clave:
 
@@ -22,4 +22,4 @@ Alquimia Web es una plataforma simplificada, enfocada en la administración de u
 - **Disponibilidad constante y acceso online**:
   - Despliegue en un servidor en línea (nube de AWS).
 
-Alquimia Web es una solución eficiente para la gestión de usuarios y el control de inventario en almacén.
+La Web es una solución eficiente para la gestión de usuarios y el control de inventario en almacén.

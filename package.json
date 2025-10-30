@@ -1,9 +1,9 @@
 {
-  "name": "alquimiaweb",
+  "name": "palltesweb",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Alquimia Web, Avances de Ventas, Control de Pallets, .....",
+  "description": "Control de Pallets, .....",
   "main": "dist/apps/server/index.js",
   "license": "MIT",
   "author": "SystemAlex",

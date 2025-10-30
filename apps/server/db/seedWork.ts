@@ -36,7 +36,7 @@ async function seed() {
         username: 'Programador',
         realname: 'Programador',
         email: 'programador@test.com',
-        passwordHash: await bcrypt.hash('AlquimiaMondelez2025', 10),
+        passwordHash: await bcrypt.hash('ControlPallets2025', 10),
         role: 'developer',
         mustChangePassword: false,
         isActive: true,

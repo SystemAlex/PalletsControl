@@ -130,7 +130,7 @@ export default function MainLayout() {
   const setHeaderTextCallback = useCallback((text: string | null) => {
     setHeaderText(text);
     const title = text ? ` → ${text}` : '';
-    document.title = `Alquimia Web${title}`;
+    document.title = `Control Pallets${title}`;
   }, []);
 
   const contextValue = useMemo(

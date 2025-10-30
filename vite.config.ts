@@ -42,6 +42,6 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
   },
   server: {
-    allowedHosts: ['alquimiaweb.serveo.net'],
+    allowedHosts: ['palletsweb.serveo.net'],
   },
 });

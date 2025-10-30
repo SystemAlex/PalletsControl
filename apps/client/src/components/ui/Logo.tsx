@@ -25,7 +25,7 @@ export default function Logo({ className, color = 'inherit', size = 32 }: LogoPr
       className={className ?? styles.root}
       style={{ height: size, fill: color }}
       role="img"
-      aria-label="Logo Alquimia SRL"
+      aria-label="Logo"
     />
   );
 }

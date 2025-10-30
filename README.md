@@ -1,10 +1,10 @@
-# Descripción Detallada del Proyecto Alquimia Web (Simplificado)
+# Descripción Detallada del Proyecto
 
-Alquimia Web es una plataforma web simplificada, enfocada en dos funcionalidades principales: la **Gestión de Usuarios** y el **Control de Pallets** en el almacén. Su arquitectura full-stack está construida para ser robusta, escalable y fácil de mantener, utilizando tecnologías modernas y siguiendo las mejores prácticas de desarrollo.
+La Web es una plataforma web simplificada, enfocada en dos funcionalidades principales: la **Gestión de Usuarios** y el **Control de Pallets** en el almacén. Su arquitectura full-stack está construida para ser robusta, escalable y fácil de mantener, utilizando tecnologías modernas y siguiendo las mejores prácticas de desarrollo.
 
 ### 1. Visión General del Proyecto
 
-El objetivo principal de esta versión de Alquimia Web es proporcionar herramientas eficientes para la administración de usuarios y la trazabilidad de productos en posiciones de pallet.
+El objetivo principal de esta versión es proporcionar herramientas eficientes para la administración de usuarios y la trazabilidad de productos en posiciones de pallet.
 
 ### 2. Arquitectura Full-Stack
 
@@ -20,12 +20,12 @@ El proyecto sigue una arquitectura de aplicación web de dos capas principales: 
 
 ### 4. Módulos y Funcionalidades Clave
 
-El proyecto Alquimia Web incluye los siguientes módulos esenciales:
+El proyecto Web incluye los siguientes módulos esenciales:
 
 - **Autenticación y Autorización de Usuarios**:
   - Inicio de sesión y cierre de sesión de usuarios.
   - Cambio de contraseña (incluyendo un flujo forzado).
-  - Roles de usuario simplificados: `admin`, `developer`, `deposito`.
+  - Roles de usuario simplificados: `developer`, `deposito`.
 - **Gestión de Usuarios**:
   - Listado paginado y filtrado de usuarios.
   - Creación, edición y actualización de usuarios (nombre, email, rol, estado activo/inactivo).

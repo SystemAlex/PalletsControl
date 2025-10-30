@@ -129,7 +129,7 @@ export default function Navigation({
 
   const hasAccessControlItems = canManageUsers || canManagePalletPositions;
 
-  const empresa = 'Alquimia SRL';
+  const empresa = 'Empresa S.A.';
   const empresaDesc = 'Control de Pallets';
 
   return (
