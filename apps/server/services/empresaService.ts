@@ -1,12 +1,8 @@
 import { db } from '../db';
 import { empresas } from '../db/schema';
-import {
-  CreateEmpresaPayload,
-  UpdateEmpresaPayload,
-  EmpresaRecord,
-} from '../../shared/types';
+import { CreateEmpresaPayload, UpdateEmpresaPayload, EmpresaRecord } from '../../shared/types';
 import { BadRequestError, ConflictError, NotFoundError } from '../lib/errors';
-import { eq, ilike, or, sql } from 'drizzle-orm';
+import { eq, ilike, or, sql, and } from 'drizzle-orm';
 
 // Helper para seleccionar columnas y formatear la fecha
 const selectEmpresaColumns = {
@@ -27,8 +23,8 @@ const selectEmpresaColumns = {
 };
 
 export async function createEmpresa(payload: CreateEmpresaPayload): Promise<EmpresaRecord> {
-  if (!payload.razonSocial || !payload.cuit) {
-    throw new BadRequestError('Razón Social y CUIT son obligatorios.');
+  if (!payload.razonSocial || !payload.cuit || !payload.email || !payload.telefono) {
+    throw new BadRequestError('Razón Social, CUIT, Email y Teléfono son obligatorios.');
   }
 
   // Verificar unicidad de CUIT
@@ -39,14 +35,12 @@ export async function createEmpresa(payload: CreateEmpresaPayload): Promise<Empr
     throw new ConflictError(`Ya existe una empresa con el CUIT ${payload.cuit}.`);
   }
 
-  // Verificar unicidad de Email si se proporciona
-  if (payload.email) {
-    const existingEmail = await db.query.empresas.findFirst({
-      where: eq(empresas.email, payload.email),
-    });
-    if (existingEmail) {
-      throw new ConflictError(`Ya existe una empresa con el email ${payload.email}.`);
-    }
+  // Verificar unicidad de Email
+  const existingEmail = await db.query.empresas.findFirst({
+    where: eq(empresas.email, payload.email),
+  });
+  if (existingEmail) {
+    throw new ConflictError(`Ya existe una empresa con el email ${payload.email}.`);
   }
 
   const [newEmpresa] = await db
@@ -149,12 +143,16 @@ export async function updateEmpresa(
     }
   }
 
+  // Crear un objeto de actualización que solo contenga las propiedades definidas en payload
+  // y añadir updatedAt. Esto evita pasar 'null' a campos NOT NULL si no se especifican.
+  const updateData: Record<string, unknown> = {
+    ...payload,
+    updatedAt: new Date(),
+  };
+
   const [updatedEmpresa] = await db
     .update(empresas)
-    .set({
-      ...payload,
-      updatedAt: new Date(),
-    })
+    .set(updateData)
     .where(eq(empresas.idEmpresa, idEmpresa))
     .returning(selectEmpresaColumns);
 

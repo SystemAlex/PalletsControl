@@ -21,11 +21,13 @@ export const empresas = pgTable(
     ciudad: text('ciudad'),
     provincia: text('provincia'),
     pais: text('pais'),
-    telefono: text('telefono'),
-    email: text('email').unique(),
+    telefono: text('telefono').notNull(), // Ahora es NOT NULL
+    email: text('email').notNull().unique(), // Ahora es NOT NULL y UNIQUE
     sitioWeb: text('sitio_web'),
     sector: text('sector'),
-    fechaAlta: date('fecha_alta', { mode: 'string' }).notNull().default(sql`CURRENT_DATE`),
+    fechaAlta: date('fecha_alta', { mode: 'string' })
+      .notNull()
+      .default(sql`CURRENT_DATE`),
     activo: boolean('activo').notNull().default(true),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),

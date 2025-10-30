@@ -28,12 +28,10 @@ properties:
     example: 'Argentina'
   telefono:
     type: string
-    nullable: true
     example: '+54 11 9876-5432'
   email:
     type: string
     format: email
-    nullable: true
     example: 'contacto.nuevo@ejemplo.com'
   sitioWeb:
     type: string

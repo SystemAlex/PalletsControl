@@ -33,77 +33,90 @@ export async function createProductInPallet(
   userId: number,
   username: string,
   realname: string,
+  idEmpresa: number, // Nuevo parámetro
 ) {
   // Validate payload
   if (!payload.fila || !payload.posicion || !payload.codigo || payload.bultos === undefined) {
     throw new BadRequestError('Faltan datos obligatorios para crear el producto en pallet.');
   }
 
-  // Ensure position is formatted correctly (e.g., 22 -> '22.00')
+  // 1. Verificar que la posición exista y esté habilitada para esta empresa
   const formattedPosicion = payload.posicion.toFixed(2);
+  const position = await db.query.palletsPosiciones.findFirst({
+    where: and(
+      eq(palletsPosiciones.fila, payload.fila),
+      eq(palletsPosiciones.posicion, formattedPosicion),
+      eq(palletsPosiciones.idEmpresa, idEmpresa),
+    ),
+  });
 
-  try {
-    const [newProductRaw] = await db
-      .insert(palletsProductos)
-      .values({
-        fila: payload.fila,
-        posicion: formattedPosicion,
-        codigo: payload.codigo,
-        bultos: payload.bultos,
-        pallets: payload.pallets,
-        vencimiento: payload.vencimiento ? new Date(payload.vencimiento + 'T00:00:00Z') : null,
-        observaciones: payload.observaciones,
-        userId: userId,
-      })
-      .returning();
-
-    if (!newProductRaw) {
-      throw new Error('Failed to create product in pallet.');
-    }
-
-    // Fetch desArticulo for the response
-    const articulo = await db.query.articulos.findFirst({
-      where: eq(articulos.idArticulo, newProductRaw.codigo),
-    });
-
-    const newProduct: ProductInPallet = {
-      id: newProductRaw.id,
-      codigo: newProductRaw.codigo,
-      desArticulo: articulo?.desArticulo || 'Desconocido',
-      bultos: newProductRaw.bultos,
-      pallets: newProductRaw.pallets,
-      vencimiento: newProductRaw.vencimiento?.toISOString().split('T')[0] || null,
-      observaciones: newProductRaw.observaciones,
-    };
-
-    // Log the action with readable string
-    const displayPosicion =
-      typeof newProductRaw.posicion === 'string'
-        ? parseFloat(newProductRaw.posicion).toString()
-        : String(newProductRaw.posicion);
-
-    await db.insert(palletActionLogs).values({
-      palletProductId: newProduct.id,
-      palletPositionId: null, // No direct position ID for product creation
-      actionType: 'ADD_PRODUCT',
-      description: `Producto Subido: ${newProduct.desArticulo} (${newProduct.codigo}) en ${newProductRaw.fila}${displayPosicion}`,
-      oldValue: null,
-      newValue: formatProductLogString(newProductRaw.fila, newProductRaw.posicion, {
-        codigo: newProductRaw.codigo,
-        desArticulo: articulo?.desArticulo,
-        bultos: newProductRaw.bultos,
-        vencimiento: newProductRaw.vencimiento,
-      }),
-      userId: userId,
-      username: username,
-      realname: realname,
-    });
-
-    return newProduct;
-  } catch (error) {
-    console.error('Error creating product in pallet:', error);
-    throw error;
+  if (!position || !position.habilitado) {
+    throw new NotFoundError(
+      `Posición ${payload.fila}${payload.posicion} no encontrada o inhabilitada para tu empresa.`,
+    );
   }
+
+  // 2. Verificar que el artículo exista para esta empresa
+  const articulo = await db.query.articulos.findFirst({
+    where: and(eq(articulos.idArticulo, payload.codigo), eq(articulos.idEmpresa, idEmpresa)),
+  });
+
+  if (!articulo) {
+    throw new NotFoundError(`Artículo con código ${payload.codigo} no encontrado para tu empresa.`);
+  }
+
+  // 3. Insertar producto
+  const [newProductRaw] = await db
+    .insert(palletsProductos)
+    .values({
+      fila: payload.fila,
+      posicion: formattedPosicion,
+      codigo: payload.codigo,
+      bultos: payload.bultos,
+      pallets: payload.pallets,
+      vencimiento: payload.vencimiento ? new Date(payload.vencimiento + 'T00:00:00Z') : null,
+      observaciones: payload.observaciones,
+      userId: userId,
+      idEmpresa: idEmpresa, // Asignar idEmpresa
+    })
+    .returning();
+
+  if (!newProductRaw) {
+    throw new Error('Failed to create product in pallet.');
+  }
+
+  const newProduct: ProductInPallet = {
+    id: newProductRaw.id,
+    codigo: newProductRaw.codigo,
+    desArticulo: articulo.desArticulo || 'Desconocido',
+    bultos: newProductRaw.bultos,
+    pallets: newProductRaw.pallets,
+    vencimiento: newProductRaw.vencimiento?.toISOString().split('T')[0] || null,
+    observaciones: newProductRaw.observaciones,
+  };
+
+  // 4. Log the action
+  const displayPosicion = parseFloat(newProductRaw.posicion).toString();
+
+  await db.insert(palletActionLogs).values({
+    palletProductId: newProduct.id,
+    palletPositionId: position.id,
+    actionType: 'ADD_PRODUCT',
+    description: `Producto Subido: ${newProduct.desArticulo} (${newProduct.codigo}) en ${newProductRaw.fila}${displayPosicion}`,
+    oldValue: null,
+    newValue: formatProductLogString(newProductRaw.fila, newProductRaw.posicion, {
+      codigo: newProductRaw.codigo,
+      desArticulo: articulo.desArticulo,
+      bultos: newProductRaw.bultos,
+      vencimiento: newProductRaw.vencimiento,
+    }),
+    userId: userId,
+    username: username,
+    realname: realname,
+    idEmpresa: idEmpresa, // Asignar idEmpresa
+  });
+
+  return newProduct;
 }
 
 export async function updateProductInPallet(
@@ -112,18 +125,22 @@ export async function updateProductInPallet(
   userId: number,
   username: string,
   realname: string,
+  idEmpresa: number, // Nuevo parámetro
 ): Promise<ProductInPallet> {
   const existingProduct = await db.query.palletsProductos.findFirst({
-    where: eq(palletsProductos.id, productId),
+    where: and(eq(palletsProductos.id, productId), eq(palletsProductos.idEmpresa, idEmpresa)), // Filtrar por ID y Empresa
   });
 
   if (!existingProduct) {
-    throw new NotFoundError('Producto no encontrado en el pallet.');
+    throw new NotFoundError('Producto no encontrado en el pallet o no pertenece a tu empresa.');
   }
 
   // Fetch desArticulo for existing product before update
   const existingArticulo = await db.query.articulos.findFirst({
-    where: eq(articulos.idArticulo, existingProduct.codigo),
+    where: and(
+      eq(articulos.idArticulo, existingProduct.codigo),
+      eq(articulos.idEmpresa, idEmpresa),
+    ),
   });
 
   const oldProductLogString = formatProductLogString(
@@ -138,7 +155,8 @@ export async function updateProductInPallet(
   );
 
   // If bultos is updated to 0, set pallets to false
-  const updatedPallets = payload.bultos === 0 ? false : existingProduct.pallets; // Keep existing pallets if not explicitly changed
+  const updatedPallets =
+    payload.bultos === 0 ? false : (payload.pallets ?? existingProduct.pallets);
 
   const [updatedProductRaw] = await db
     .update(palletsProductos)
@@ -148,7 +166,7 @@ export async function updateProductInPallet(
       userId: userId, // Update userId to the current user performing the action
       updatedAt: new Date(),
     })
-    .where(eq(palletsProductos.id, productId))
+    .where(and(eq(palletsProductos.id, productId), eq(palletsProductos.idEmpresa, idEmpresa))) // Filtrar por ID y Empresa
     .returning();
 
   if (!updatedProductRaw) {
@@ -156,7 +174,10 @@ export async function updateProductInPallet(
   }
 
   const articulo = await db.query.articulos.findFirst({
-    where: eq(articulos.idArticulo, updatedProductRaw.codigo),
+    where: and(
+      eq(articulos.idArticulo, updatedProductRaw.codigo),
+      eq(articulos.idEmpresa, idEmpresa),
+    ),
   });
 
   const updatedProduct: ProductInPallet = {
@@ -169,10 +190,7 @@ export async function updateProductInPallet(
     observaciones: updatedProductRaw.observaciones,
   };
 
-  const displayPosicion =
-    typeof existingProduct.posicion === 'string'
-      ? parseFloat(existingProduct.posicion).toString()
-      : String(existingProduct.posicion);
+  const displayPosicion = parseFloat(existingProduct.posicion).toString();
 
   // Log the action with readable string
   await db.insert(palletActionLogs).values({
@@ -190,6 +208,7 @@ export async function updateProductInPallet(
     userId: userId,
     username: username,
     realname: realname,
+    idEmpresa: idEmpresa, // Asignar idEmpresa
   });
 
   return updatedProduct;
@@ -200,19 +219,23 @@ export async function deleteProductFromPallet(
   userId: number,
   username: string,
   realname: string,
+  idEmpresa: number, // Nuevo parámetro
 ) {
   // Recuperar el registro antes de borrarlo
   const existingPalletProduct = await db.query.palletsProductos.findFirst({
-    where: eq(palletsProductos.id, palletProductId),
+    where: and(eq(palletsProductos.id, palletProductId), eq(palletsProductos.idEmpresa, idEmpresa)), // Filtrar por ID y Empresa
   });
 
   if (!existingPalletProduct) {
-    throw new NotFoundError('Producto en pallet no encontrado.');
+    throw new NotFoundError('Producto en pallet no encontrado o no pertenece a tu empresa.');
   }
 
   // Intentar obtener descripción del artículo
   const articulo = await db.query.articulos.findFirst({
-    where: eq(articulos.idArticulo, existingPalletProduct.codigo),
+    where: and(
+      eq(articulos.idArticulo, existingPalletProduct.codigo),
+      eq(articulos.idEmpresa, idEmpresa),
+    ),
   });
 
   // Buscar la posición correspondiente (si existe) para obtener su id
@@ -220,6 +243,7 @@ export async function deleteProductFromPallet(
     where: and(
       eq(palletsPosiciones.fila, existingPalletProduct.fila),
       eq(palletsPosiciones.posicion, existingPalletProduct.posicion),
+      eq(palletsPosiciones.idEmpresa, idEmpresa),
     ),
   });
 
@@ -234,10 +258,7 @@ export async function deleteProductFromPallet(
     },
   );
 
-  const displayPosicion =
-    typeof existingPalletProduct.posicion === 'string'
-      ? parseFloat(existingPalletProduct.posicion).toString()
-      : String(existingPalletProduct.posicion);
+  const displayPosicion = parseFloat(existingPalletProduct.posicion).toString();
 
   // Loguear la acción ANTES de eliminar para evitar violación de FK
   await db.insert(palletActionLogs).values({
@@ -250,6 +271,7 @@ export async function deleteProductFromPallet(
     userId: userId,
     username: username,
     realname: realname,
+    idEmpresa: idEmpresa, // Asignar idEmpresa
   });
 
   // Ahora sí eliminar el producto del pallet

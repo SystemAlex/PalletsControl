@@ -27,16 +27,27 @@ export async function createPago(payload: CreatePagoPayload): Promise<PagoRecord
     throw new NotFoundError(`Empresa con ID ${payload.idEmpresa} no encontrada.`);
   }
 
-  const [newPago] = await db
-    .insert(pagos)
-    .values({
-      idEmpresa: payload.idEmpresa,
-      fechaPago: payload.fechaPago,
-      monto: payload.monto.toFixed(2), // Almacenar como string con 2 decimales
-      metodo: payload.metodo,
-      observaciones: payload.observaciones,
-    })
-    .returning(selectPagoColumns);
+  const insertData: {
+    idEmpresa: number;
+    fechaPago?: string;
+    monto: string;
+    metodo?: string;
+    observaciones?: string;
+  } = {
+    idEmpresa: payload.idEmpresa,
+    fechaPago: payload.fechaPago ?? undefined,
+    monto: payload.monto.toFixed(2), // Almacenar como string con 2 decimales
+  };
+
+  if (payload.metodo !== undefined && payload.metodo !== null) {
+    insertData.metodo = payload.metodo;
+  }
+
+  if (payload.observaciones !== undefined && payload.observaciones !== null) {
+    insertData.observaciones = payload.observaciones;
+  }
+
+  const [newPago] = await db.insert(pagos).values(insertData).returning(selectPagoColumns);
 
   if (!newPago) {
     throw new Error('Fallo al registrar el pago.');
@@ -60,10 +71,7 @@ export async function getPagos(
   if (searchQuery) {
     const searchPattern = `%${searchQuery.toLowerCase()}%`;
     conditions.push(
-      or(
-        ilike(pagos.observaciones, searchPattern),
-        ilike(pagos.metodo, searchPattern),
-      ),
+      or(ilike(pagos.observaciones, searchPattern), ilike(pagos.metodo, searchPattern)),
     );
   }
 
@@ -96,10 +104,7 @@ export async function getPagoById(idPago: number): Promise<PagoRecord> {
   return pago[0];
 }
 
-export async function updatePago(
-  idPago: number,
-  payload: UpdatePagoPayload,
-): Promise<PagoRecord> {
+export async function updatePago(idPago: number, payload: UpdatePagoPayload): Promise<PagoRecord> {
   if (Object.keys(payload).length === 0) {
     throw new BadRequestError('No hay datos para actualizar.');
   }

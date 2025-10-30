@@ -1,12 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import {
-  makeStyles,
-  Card,
-  Text,
-  CardFooter,
-  Button,
-  mergeClasses,
-} from '@fluentui/react-components';
+import { makeStyles, Card, Text, CardFooter, Button } from '@fluentui/react-components';
 import { useMainLayoutContext } from '../layouts/MainLayout';
 import UserDialog, { UserFormData } from '../components/dialogs/UserDialog';
 import ConfirmationDialog from '../components/dialogs/ConfirmationDialog';

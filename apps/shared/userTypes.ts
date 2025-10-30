@@ -40,7 +40,8 @@ export interface UserApiResponse {
   createdAt: string;
   isActive: boolean;
   lastLoginAt: string | null;
-  // Removed id_personal, des_personal, canViewOthers
+  idEmpresa: number; // CAMBIO: Ahora es number
+  mustChangePassword: boolean; // AÑADIDO para error 4
 }
 
 export interface ActiveUser {
@@ -49,4 +50,5 @@ export interface ActiveUser {
   realname: string;
   role: UserRole;
   lastActivityAt: string;
+  idEmpresa: number; // CAMBIO: Ahora es number
 }

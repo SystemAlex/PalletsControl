@@ -6,7 +6,6 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   DATABASE_URL: z.string().min(1, 'DATABASE_URL es requerida'),
   JWT_SECRET: z.string().min(1, 'JWT_SECRET es requerida'),
-  // Removed CHESS_ENCRYPTION_KEY
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

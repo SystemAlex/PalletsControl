@@ -2,6 +2,7 @@ import { pgTable, serial, text, timestamp, integer, index } from 'drizzle-orm/pg
 import { users } from './userSchema';
 import { palletsProductos } from './palletProductSchema';
 import { palletsPosiciones } from './palletSchema';
+import { empresas } from './empresaSchema';
 
 export const palletActionLogs = pgTable(
   'pallet_action_logs',
@@ -22,6 +23,9 @@ export const palletActionLogs = pgTable(
       .references(() => users.id, { onDelete: 'cascade' }),
     username: text('username').notNull(), // Denormalized for historical accuracy
     realname: text('realname').notNull(), // Denormalized for historical accuracy
+    idEmpresa: integer('id_empresa')
+      .notNull()
+      .references(() => empresas.idEmpresa), // Requerido
     timestamp: timestamp('timestamp').notNull().defaultNow(),
   },
   (table) => {
@@ -34,6 +38,7 @@ export const palletActionLogs = pgTable(
       ),
       userIdIdx: index('pallet_action_logs_user_id_idx').on(table.userId),
       timestampIdx: index('pallet_action_logs_timestamp_idx').on(table.timestamp),
+      idEmpresaIdx: index('pallet_action_logs_id_empresa_idx').on(table.idEmpresa),
     };
   },
 );

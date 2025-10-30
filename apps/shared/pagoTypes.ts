@@ -9,14 +9,14 @@ export interface PagoRecord {
 
 export interface CreatePagoPayload {
   idEmpresa: number;
-  fechaPago?: string; // YYYY-MM-DD
+  fechaPago?: string | null; // YYYY-MM-DD
   monto: number;
   metodo?: string | null;
   observaciones?: string | null;
 }
 
 export interface UpdatePagoPayload {
-  fechaPago?: string; // YYYY-MM-DD
+  fechaPago?: string | null; // YYYY-MM-DD
   monto?: number;
   metodo?: string | null;
   observaciones?: string | null;

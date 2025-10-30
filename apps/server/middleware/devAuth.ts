@@ -33,7 +33,8 @@ export const devAuthMiddleware = (req: AuthRequest, res: Response, next: NextFun
     typeof payload.id === 'undefined' ||
     !payload.username ||
     !payload.realname ||
-    !payload.role
+    !payload.role ||
+    typeof payload.idEmpresa === 'undefined' // CAMBIO: idEmpresa debe estar presente
   ) {
     res.clearCookie('authToken');
     return res.redirect('/');
@@ -45,7 +46,7 @@ export const devAuthMiddleware = (req: AuthRequest, res: Response, next: NextFun
     realname: payload.realname,
     role: payload.role,
     mustChangePassword: payload.mustChangePassword,
-    // Removed hasChessConfig and canViewOthers
+    idEmpresa: payload.idEmpresa, // Incluir idEmpresa (ahora number)
   };
 
   const allowedRoles: UserRole[] = ['admin', 'developer'];

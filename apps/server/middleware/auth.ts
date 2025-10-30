@@ -30,7 +30,8 @@ export const verifyToken = (req: AuthRequest, _res: Response, next: NextFunction
     typeof payload.id === 'undefined' ||
     !payload.username ||
     !payload.realname ||
-    !payload.role
+    !payload.role ||
+    typeof payload.idEmpresa === 'undefined' // CAMBIO: idEmpresa debe estar presente
   ) {
     return next(new UnauthorizedError('Payload de token incompleto o inválido'));
   }
@@ -41,7 +42,7 @@ export const verifyToken = (req: AuthRequest, _res: Response, next: NextFunction
     realname: payload.realname,
     role: payload.role,
     mustChangePassword: payload.mustChangePassword,
-    // Removed hasChessConfig and canViewOthers
+    idEmpresa: payload.idEmpresa, // Incluir idEmpresa (ahora number)
   };
 
   next();

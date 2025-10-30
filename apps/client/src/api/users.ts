@@ -29,12 +29,7 @@ export const fetchActiveUsers = async (): Promise<ActiveUser[]> => {
 export const createUser = async (
   payload: Pick<
     UserFormData,
-    | 'username'
-    | 'realname'
-    | 'email'
-    | 'role'
-    | 'isActive'
-    | 'password'
+    'username' | 'realname' | 'email' | 'role' | 'isActive' | 'password'
     // Removed 'canViewOthers' and 'id_personal'
   >,
 ) => {

@@ -22,11 +22,7 @@ import {
 const router = Router();
 
 // Roles permitidos para acceder a esta información
-const allowedRoles: UserRole[] = [
-  'admin',
-  'developer',
-  'deposito',
-];
+const allowedRoles: UserRole[] = ['admin', 'developer', 'deposito'];
 
 // Middleware para verificar roles
 const checkRoles = (req: AuthRequest, _res: Response, next: NextFunction) => {
@@ -34,6 +30,22 @@ const checkRoles = (req: AuthRequest, _res: Response, next: NextFunction) => {
     throw new UnauthorizedError('No tienes permiso para acceder a esta información.');
   }
   next();
+};
+
+// Helper para obtener la condición de filtrado por empresa
+const getEmpresaFilterCondition = (req: AuthRequest) => {
+  const requesterRole = req.user?.role as UserRole;
+  const requesterIdEmpresa = req.user?.idEmpresa;
+
+  if (requesterRole === 'admin') {
+    return undefined; // Admin ve todo
+  }
+
+  if (!requesterIdEmpresa) {
+    throw new UnauthorizedError('Tu cuenta no está asignada a una empresa.');
+  }
+
+  return eq(palletsPosiciones.idEmpresa, requesterIdEmpresa);
 };
 
 // Esquema de validación para crear un producto en un pallet
@@ -67,11 +79,18 @@ const updateProductInPalletSchema = z.object({
 // GET: Obtener todas las posiciones de pallets habilitadas con sus productos
 router.get('/', verifyToken, renewToken, checkRoles, async (req: AuthRequest, res, next) => {
   try {
-    // Obtener todas las posiciones habilitadas
+    const empresaFilter = getEmpresaFilterCondition(req);
+
+    // Obtener todas las posiciones habilitadas para la empresa del usuario
     const enabledPositions = await db.query.palletsPosiciones.findMany({
-      where: eq(palletsPosiciones.habilitado, true),
+      where: and(eq(palletsPosiciones.habilitado, true), empresaFilter),
       orderBy: [palletsPosiciones.fila, palletsPosiciones.posicion],
     });
+
+    // Si no hay posiciones habilitadas, retornar vacío
+    if (enabledPositions.length === 0) {
+      return res.json([]);
+    }
 
     // Obtener todos los productos en pallets que están en posiciones habilitadas
     const productsInPallets = await db
@@ -85,6 +104,7 @@ router.get('/', verifyToken, renewToken, checkRoles, async (req: AuthRequest, re
         pallets: palletsProductos.pallets,
         vencimiento: sql<string | null>`${palletsProductos.vencimiento}::text`.as('vencimiento'), // Formatear a ISO string
         observaciones: palletsProductos.observaciones,
+        idEmpresa: palletsProductos.idEmpresa,
       })
       .from(palletsProductos)
       .innerJoin(articulos, eq(palletsProductos.codigo, articulos.idArticulo))
@@ -93,7 +113,9 @@ router.get('/', verifyToken, renewToken, checkRoles, async (req: AuthRequest, re
         and(
           eq(palletsProductos.fila, palletsPosiciones.fila),
           eq(palletsProductos.posicion, palletsPosiciones.posicion),
+          eq(palletsProductos.idEmpresa, palletsPosiciones.idEmpresa), // Unir por empresa
           eq(palletsPosiciones.habilitado, true), // Solo productos en posiciones habilitadas
+          empresaFilter, // Filtrar por empresa del usuario
         ),
       )
       .where(isNotNull(articulos.desArticulo)); // Asegurarse de que el artículo exista
@@ -137,16 +159,18 @@ router.get('/', verifyToken, renewToken, checkRoles, async (req: AuthRequest, re
 // POST: Añadir un producto a una posición de pallet
 router.post('/', verifyToken, renewToken, checkRoles, async (req: AuthRequest, res, next) => {
   try {
-    const validation = createProductInPalletSchema.safeParse(req.body);
-    if (!validation.success) {
-      throw new BadRequestError(validation.error.errors.map((e) => e.message).join(', '));
-    }
-
     const userId = req.user?.id;
     const username = req.user?.username;
     const realname = req.user?.realname;
-    if (!userId || !username || !realname) {
-      throw new UnauthorizedError('Usuario no autenticado.');
+    const idEmpresa = req.user?.idEmpresa;
+
+    if (!userId || !username || !realname || !idEmpresa) {
+      throw new UnauthorizedError('Usuario no autenticado o sin empresa asignada.');
+    }
+
+    const validation = createProductInPalletSchema.safeParse(req.body);
+    if (!validation.success) {
+      throw new BadRequestError(validation.error.errors.map((e) => e.message).join(', '));
     }
 
     // Asegurarse de que vencimiento sea string | null antes de pasarlo al servicio
@@ -160,6 +184,7 @@ router.post('/', verifyToken, renewToken, checkRoles, async (req: AuthRequest, r
       userId,
       username,
       realname,
+      idEmpresa, // Pasar idEmpresa al servicio
     );
 
     res
@@ -181,8 +206,10 @@ router.patch('/:id', verifyToken, renewToken, checkRoles, async (req: AuthReques
     const userId = req.user?.id;
     const username = req.user?.username;
     const realname = req.user?.realname;
-    if (!userId || !username || !realname) {
-      throw new UnauthorizedError('Usuario no autenticado.');
+    const idEmpresa = req.user?.idEmpresa;
+
+    if (!userId || !username || !realname || !idEmpresa) {
+      throw new UnauthorizedError('Usuario no autenticado o sin empresa asignada.');
     }
 
     const validation = updateProductInPalletSchema.safeParse(req.body);
@@ -196,6 +223,7 @@ router.patch('/:id', verifyToken, renewToken, checkRoles, async (req: AuthReques
       userId,
       username,
       realname,
+      idEmpresa, // Pasar idEmpresa al servicio
     );
 
     res.status(200).json({ message: 'Producto actualizado exitosamente', product: updatedProduct });
@@ -215,11 +243,19 @@ router.delete('/:id', verifyToken, renewToken, checkRoles, async (req: AuthReque
     const userId = req.user?.id;
     const username = req.user?.username;
     const realname = req.user?.realname;
-    if (!userId || !username || !realname) {
-      throw new UnauthorizedError('Usuario no autenticado.');
+    const idEmpresa = req.user?.idEmpresa;
+
+    if (!userId || !username || !realname || !idEmpresa) {
+      throw new UnauthorizedError('Usuario no autenticado o sin empresa asignada.');
     }
 
-    const deletedProduct = await deleteProductFromPallet(productId, userId, username, realname);
+    const deletedProduct = await deleteProductFromPallet(
+      productId,
+      userId,
+      username,
+      realname,
+      idEmpresa, // Pasar idEmpresa al servicio
+    );
 
     res
       .status(200)

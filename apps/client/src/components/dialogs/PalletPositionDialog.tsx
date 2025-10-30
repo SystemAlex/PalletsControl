@@ -27,7 +27,11 @@ interface PalletPositionDialogProps {
   isMobile: boolean;
 }
 
-export default function PalletPositionDialog({ open, onOpenChange, isMobile }: PalletPositionDialogProps) {
+export default function PalletPositionDialog({
+  open,
+  onOpenChange,
+  isMobile,
+}: PalletPositionDialogProps) {
   const queryClient = useQueryClient();
   const { handleApiError } = useAuth();
   const { dispatchToast } = useToastController('app-toaster');

@@ -77,20 +77,14 @@ export function usePalletProducts() {
     enabled: true,
   });
 
-  const allowedRolesToManage = useMemo(
-    () => ['admin', 'developer', 'deposito'],
-    [],
-  );
+  const allowedRolesToManage = useMemo(() => ['admin', 'developer', 'deposito'], []);
 
   const canModifyPallets = useMemo(() => {
     if (!user || !allowedRolesToManage.includes(user.role)) return false;
     return true;
   }, [user, allowedRolesToManage]);
 
-  const allowedRolesForLogs = useMemo(
-    () => ['admin', 'developer'],
-    [],
-  );
+  const allowedRolesForLogs = useMemo(() => ['admin', 'developer'], []);
   const canViewLogs = !!user && allowedRolesForLogs.includes(user.role);
 
   const today = useMemo(() => {

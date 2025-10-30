@@ -28,6 +28,22 @@ const getPalletActionLogsSchema = z.object({
   endDate: z.string().optional(),
 });
 
+// Helper para obtener la condición de filtrado por empresa
+const getEmpresaFilterCondition = (req: AuthRequest) => {
+  const requesterRole = req.user?.role as UserRole;
+  const requesterIdEmpresa = req.user?.idEmpresa;
+
+  if (requesterRole === 'admin') {
+    return undefined; // Admin ve todo
+  }
+
+  if (!requesterIdEmpresa) {
+    throw new UnauthorizedError('Tu cuenta no está asignada a una empresa.');
+  }
+
+  return eq(palletActionLogs.idEmpresa, requesterIdEmpresa);
+};
+
 router.get('/', verifyToken, renewToken, checkRoles, async (req: AuthRequest, res, next) => {
   try {
     const validation = getPalletActionLogsSchema.safeParse(req.query);
@@ -37,7 +53,12 @@ router.get('/', verifyToken, renewToken, checkRoles, async (req: AuthRequest, re
 
     const { limit, offset, search, actionType, startDate, endDate } = validation.data;
 
+    const empresaFilter = getEmpresaFilterCondition(req);
+
     const conditions = [];
+    if (empresaFilter) {
+      conditions.push(empresaFilter);
+    }
 
     if (search) {
       const searchPattern = `%${search.toLowerCase()}%`;

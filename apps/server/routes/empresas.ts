@@ -27,8 +27,8 @@ const createEmpresaSchema = z.object({
   ciudad: z.string().nullable().optional(),
   provincia: z.string().nullable().optional(),
   pais: z.string().nullable().optional(),
-  telefono: z.string().nullable().optional(),
-  email: z.string().email('Email inválido').nullable().optional(),
+  telefono: z.string().min(1, 'Teléfono es obligatorio'), // Requerido
+  email: z.string().email('Email inválido').min(1, 'Email es obligatorio'), // Requerido
   sitioWeb: z.string().nullable().optional(),
   sector: z.string().nullable().optional(),
   activo: z.boolean().optional(),
@@ -42,8 +42,8 @@ const updateEmpresaSchema = z.object({
   ciudad: z.string().nullable().optional(),
   provincia: z.string().nullable().optional(),
   pais: z.string().nullable().optional(),
-  telefono: z.string().nullable().optional(),
-  email: z.string().email('Email inválido').nullable().optional(),
+  telefono: z.string().min(1, 'Teléfono es obligatorio').optional(), // Requerido (si se proporciona)
+  email: z.string().email('Email inválido').min(1, 'Email es obligatorio').optional(), // Requerido (si se proporciona)
   sitioWeb: z.string().nullable().optional(),
   sector: z.string().nullable().optional(),
   activo: z.boolean().optional(),
@@ -120,17 +120,23 @@ router.put('/:id', verifyToken, renewToken, checkAdminRole, async (req: AuthRequ
 });
 
 // DELETE: Eliminar empresa por ID
-router.delete('/:id', verifyToken, renewToken, checkAdminRole, async (req: AuthRequest, res, next) => {
-  try {
-    const idEmpresa = parseInt(req.params.id, 10);
-    if (isNaN(idEmpresa)) {
-      throw new BadRequestError('ID de empresa inválido.');
+router.delete(
+  '/:id',
+  verifyToken,
+  renewToken,
+  checkAdminRole,
+  async (req: AuthRequest, res, next) => {
+    try {
+      const idEmpresa = parseInt(req.params.id, 10);
+      if (isNaN(idEmpresa)) {
+        throw new BadRequestError('ID de empresa inválido.');
+      }
+      const deletedEmpresa = await empresaService.deleteEmpresa(idEmpresa);
+      res.json({ message: 'Empresa eliminada exitosamente', empresa: deletedEmpresa });
+    } catch (error) {
+      next(error);
     }
-    const deletedEmpresa = await empresaService.deleteEmpresa(idEmpresa);
-    res.json({ message: 'Empresa eliminada exitosamente', empresa: deletedEmpresa });
-  } catch (error) {
-    next(error);
-  }
-});
+  },
+);
 
 export default router;

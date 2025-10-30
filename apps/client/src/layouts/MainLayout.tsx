@@ -1,5 +1,5 @@
 import React, { useState, ReactNode, useEffect, useMemo, useCallback } from 'react';
-import { Link, Outlet, useOutletContext, useLocation } from 'react-router-dom';
+import { Link, Outlet, useOutletContext } from 'react-router-dom';
 import {
   makeStyles,
   useRestoreFocusTarget,
@@ -95,7 +95,6 @@ export function useMainLayoutContext() {
 
 export default function MainLayout() {
   const styles = useStyles();
-  const location = useLocation();
 
   const [isNavOpen, setNavOpen] = useState(false);
   const [isChangePasswordOpen, setChangePasswordOpen] = useState(false);
@@ -160,7 +159,6 @@ export default function MainLayout() {
       />
 
       <ChangePasswordDialog open={isChangePasswordOpen} onOpenChange={setChangePasswordOpen} />
-      {/* Removed ChessAccessDialog */}
       <PalletPositionDialog
         open={isPalletPositionDialogOpen}
         onOpenChange={setIsPalletPositionDialogOpen}

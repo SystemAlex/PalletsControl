@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <rect width="32" height="32" fill="none"/>
+  <!-- Ícono del pallet -->
+  <g transform="translate(4, 4)">
+    <rect x="0" y="14" width="24" height="6" rx="1" fill="#1D4B1A"/>
+    <rect x="0" y="8" width="24" height="5" rx="1" fill="#216920"/>
+    <rect x="0" y="2" width="24" height="5" rx="1" fill="#020401"/>
+    <rect x="3" y="20" width="3" height="4" rx="0.5" fill="#C0E7B8"/>
+    <rect x="10.5" y="20" width="3" height="4" rx="0.5" fill="#C0E7B8"/>
+    <rect x="18" y="20" width="3" height="4" rx="0.5" fill="#C0E7B8"/>
+  </g>
+</svg>

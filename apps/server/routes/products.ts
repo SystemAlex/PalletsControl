@@ -9,17 +9,29 @@ import { AuthRequest, UserRole } from '../../shared/types';
 
 const router = Router();
 
-const allowedRoles: UserRole[] = [
-  'admin',
-  'developer',
-  'deposito',
-];
+const allowedRoles: UserRole[] = ['admin', 'developer', 'deposito'];
 
 const checkRoles = (req: AuthRequest, _res: Response, next: NextFunction) => {
   if (!req.user?.role || !allowedRoles.includes(req.user.role)) {
     throw new UnauthorizedError('No tienes permiso para acceder a esta información.');
   }
   next();
+};
+
+// Helper para obtener la condición de filtrado por empresa
+const getEmpresaFilterCondition = (req: AuthRequest) => {
+  const requesterRole = req.user?.role as UserRole;
+  const requesterIdEmpresa = req.user?.idEmpresa;
+
+  if (requesterRole === 'admin') {
+    return undefined; // Admin ve todo
+  }
+
+  if (!requesterIdEmpresa) {
+    throw new UnauthorizedError('Tu cuenta no está asignada a una empresa.');
+  }
+
+  return eq(articulos.idEmpresa, requesterIdEmpresa);
 };
 
 // Helper para seleccionar todas las columnas de articulos
@@ -37,6 +49,7 @@ const selectArticuloColumns = {
   categoria: articulos.categoria,
   subCategoria: articulos.subCategoria,
   marca: articulos.marca,
+  idEmpresa: articulos.idEmpresa,
 };
 
 // GET: Obtener lista de artículos con búsqueda opcional
@@ -45,6 +58,8 @@ router.get('/', verifyToken, renewToken, checkRoles, async (req: AuthRequest, re
     const searchQuery = req.query.search as string | undefined;
     const limit = parseInt(req.query.limit as string, 10) || 50;
     const offset = parseInt(req.query.offset as string, 10) || 0;
+
+    const empresaFilter = getEmpresaFilterCondition(req);
 
     const conditions = [
       eq(articulos.anulado, false),
@@ -55,6 +70,10 @@ router.get('/', verifyToken, renewToken, checkRoles, async (req: AuthRequest, re
         isNotNull(articulos.categoria), // o categoria es NULL
       ),
     ];
+
+    if (empresaFilter) {
+      conditions.push(empresaFilter);
+    }
 
     if (searchQuery) {
       const searchPattern = `%${searchQuery.toLowerCase()}%`;
@@ -88,10 +107,17 @@ router.get('/:id', verifyToken, renewToken, checkRoles, async (req: AuthRequest,
       throw new BadRequestError('ID de artículo inválido.');
     }
 
+    const empresaFilter = getEmpresaFilterCondition(req);
+
+    const conditions = [eq(articulos.idArticulo, idArticulo)];
+    if (empresaFilter) {
+      conditions.push(empresaFilter);
+    }
+
     const [articulo] = await db
       .select(selectArticuloColumns)
       .from(articulos)
-      .where(eq(articulos.idArticulo, idArticulo))
+      .where(and(...conditions))
       .limit(1);
 
     if (!articulo) {

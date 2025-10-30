@@ -21,8 +21,7 @@ properties:
           example: usuario1@email.com
         role:
           type: string
-          enum:
-            ['gerente', 'developer', 'deposito']
+          enum: ['gerente', 'developer', 'deposito']
           example: developer
         isActive:
           type: boolean

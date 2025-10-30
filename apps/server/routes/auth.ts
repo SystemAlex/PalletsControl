@@ -25,6 +25,7 @@ const registerSchema = z.object({
   password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
   role: z.enum(allAvailableRoles),
   email: z.string().email('Email inválido').optional(),
+  idEmpresa: z.coerce.number().min(1, 'ID de Empresa inválido').optional(), // Permitir opcional en el registro
 });
 
 // Definir loginSchema
@@ -43,7 +44,17 @@ router.post('/register', async (req, res, next) => {
       throw new BadRequestError(validation.error.errors.map((e) => e.message).join(', ')); // Tipar explícitamente 'e'
     }
 
-    const { username, realname, password, role, email } = validation.data;
+    const { username, realname, password, role, email, idEmpresa } = validation.data;
+
+    // Lógica de asignación de idEmpresa: 1 para admin/developer, requerido para otros
+    let finalIdEmpresa = idEmpresa;
+    if (role === 'admin' || role === 'developer') {
+      finalIdEmpresa = 1; // Asignar a la empresa 1 por defecto
+    } else if (!finalIdEmpresa) {
+      throw new BadRequestError(
+        'Los usuarios con rol de depósito o gerente deben tener una empresa asignada.',
+      );
+    }
 
     const existingUser = await db.query.users.findFirst({
       where: eq(users.username, username),
@@ -63,12 +74,14 @@ router.post('/register', async (req, res, next) => {
         passwordHash,
         role,
         email: email || null,
+        idEmpresa: finalIdEmpresa, // Usar el idEmpresa final
       })
       .returning({
         id: users.id,
         username: users.username,
         realname: users.realname,
         role: users.role,
+        idEmpresa: users.idEmpresa,
       });
 
     res.status(201).json({ message: 'Usuario creado exitosamente', user: newUser });
@@ -111,6 +124,9 @@ router.post('/login', loginRateLimiter, async (req, res, next) => {
       throw new UnauthorizedError('La cuenta del usuario está inactiva');
     }
 
+    // Ya no es necesario validar idEmpresa === null, ya que es NOT NULL en la DB.
+    // Si el usuario existe, tiene un idEmpresa.
+
     // Solo actualizar lastLoginAt y lastActivityAt si el usuario no está forzado a cambiar la contraseña
     if (!user.mustChangePassword) {
       await db
@@ -133,7 +149,7 @@ router.post('/login', loginRateLimiter, async (req, res, next) => {
       realname: user.realname,
       role: user.role,
       mustChangePassword: user.mustChangePassword,
-      // Removed hasChessConfig and canViewOthers
+      idEmpresa: user.idEmpresa, // Incluir idEmpresa (ahora siempre es number)
     };
     const token = jwt.sign(tokenPayload, env.JWT_SECRET, { expiresIn });
 
@@ -237,7 +253,7 @@ router.post('/change-password', verifyToken, renewToken, async (req: AuthRequest
       realname: updatedUser.realname,
       role: updatedUser.role,
       mustChangePassword: updatedUser.mustChangePassword, // Esto ahora será falso
-      // Removed hasChessConfig and canViewOthers
+      idEmpresa: updatedUser.idEmpresa, // Incluir idEmpresa
     };
     const newToken = jwt.sign(newTokenPayload, env.JWT_SECRET, { expiresIn: '30m' }); // Después de cambiar la contraseña, establecer la expiración normal
 
@@ -292,7 +308,7 @@ router.get('/me', verifyToken, renewToken, async (req: AuthRequest, res) => {
     realname: req.user?.realname,
     role: req.user?.role,
     mustChangePassword: req.user?.mustChangePassword,
-    // Removed hasChessConfig and canViewOthers
+    idEmpresa: req.user?.idEmpresa, // Incluir idEmpresa
     expiresAt: expiresAt,
   });
 });

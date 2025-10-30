@@ -20,4 +20,3 @@ properties:
     type: integer
     description: Timestamp de expiración del token en milisegundos (solo en /auth/login y /auth/me)
     example: 1678886400000
-  # Removed hasChessConfig

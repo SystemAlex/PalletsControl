@@ -10,6 +10,34 @@ import { AuthRequest, UserRole } from '../../shared/types';
 
 const router = Router();
 
+// Roles permitidos para todas las operaciones (según la solicitud del usuario)
+const allowedRoles: UserRole[] = ['admin', 'developer', 'deposito'];
+
+// Middleware para verificar roles
+const checkRoles = (req: AuthRequest, next: NextFunction) => {
+  if (!req.user?.role || !allowedRoles.includes(req.user.role)) {
+    throw new UnauthorizedError('No tienes permiso para realizar esta acción.');
+  }
+  next();
+};
+
+// Helper para obtener la condición de filtrado por empresa
+const getEmpresaFilterCondition = (req: AuthRequest) => {
+  const requesterRole = req.user?.role as UserRole;
+  const requesterIdEmpresa = req.user?.idEmpresa;
+
+  if (requesterRole === 'admin') {
+    return undefined; // Admin ve todo
+  }
+
+  // Si no es admin, debe tener una empresa asignada y se aplica el filtro.
+  if (!requesterIdEmpresa) {
+    throw new UnauthorizedError('Tu cuenta no está asignada a una empresa.');
+  }
+
+  return eq(palletsPosiciones.idEmpresa, requesterIdEmpresa);
+};
+
 // Esquema de validación para crear una posición de pallet
 const createPalletPositionSchema = z.object({
   fila: z
@@ -28,21 +56,6 @@ const updatePalletPositionSchema = z.object({
   habilitado: z.boolean(),
 });
 
-// Roles permitidos para todas las operaciones (según la solicitud del usuario)
-const allowedRoles: UserRole[] = [
-  'admin',
-  'developer',
-  'deposito',
-];
-
-// Middleware para verificar roles
-const checkRoles = (req: AuthRequest, next: NextFunction) => {
-  if (!req.user?.role || !allowedRoles.includes(req.user.role)) {
-    throw new UnauthorizedError('No tienes permiso para realizar esta acción.');
-  }
-  next();
-};
-
 // Helper para seleccionar columnas y castear 'posicion' a número
 // Aunque se usa CAST en SQL, node-postgres puede devolver DECIMAL como string.
 // La conversión final a number se hará en la capa de aplicación.
@@ -51,6 +64,7 @@ const selectPalletPositionColumns = {
   fila: palletsPosiciones.fila,
   posicion: sql<string>`${palletsPosiciones.posicion}`.as('posicion'), // Mantener como string aquí para la selección
   habilitado: palletsPosiciones.habilitado,
+  idEmpresa: palletsPosiciones.idEmpresa,
 };
 
 // Función para asegurar que 'posicion' sea un número
@@ -78,9 +92,12 @@ function formatPalletPositionLogString(position: {
 router.get('/', verifyToken, renewToken, (req: AuthRequest, res, next) =>
   checkRoles(req, async () => {
     try {
+      const empresaFilter = getEmpresaFilterCondition(req);
+
       const positions = await db
         .select(selectPalletPositionColumns)
         .from(palletsPosiciones)
+        .where(empresaFilter)
         .orderBy(palletsPosiciones.fila, palletsPosiciones.posicion);
 
       const formattedPositions = positions.map(formatPositionForResponse);
@@ -95,6 +112,18 @@ router.get('/', verifyToken, renewToken, (req: AuthRequest, res, next) =>
 router.post('/', verifyToken, renewToken, (req: AuthRequest, res, next) =>
   checkRoles(req, async () => {
     try {
+      const requesterRole = req.user?.role as UserRole;
+      const requesterIdEmpresa = req.user?.idEmpresa;
+
+      if (requesterRole !== 'admin' && !requesterIdEmpresa) {
+        throw new UnauthorizedError(
+          'Tu cuenta no está asignada a una empresa para crear posiciones.',
+        );
+      }
+
+      // Si no es admin, usa su idEmpresa. Si es admin, usa el idEmpresa del payload si existe, o 1 por defecto.
+      const idEmpresa = requesterRole === 'admin' ? (req.body.idEmpresa ?? 1) : requesterIdEmpresa!;
+
       const validation = createPalletPositionSchema.safeParse(req.body);
       if (!validation.success) {
         throw new BadRequestError(validation.error.errors.map((e) => e.message).join(', '));
@@ -102,17 +131,18 @@ router.post('/', verifyToken, renewToken, (req: AuthRequest, res, next) =>
 
       const { fila, posicion, habilitado } = validation.data;
 
-      // Verificar si ya existe una posición con la misma fila y posición
+      // Verificar si ya existe una posición con la misma fila, posición Y empresa
       const existingPosition = await db.query.palletsPosiciones.findFirst({
         where: and(
           eq(palletsPosiciones.fila, fila),
           eq(palletsPosiciones.posicion, posicion.toFixed(2)), // Convertir a string con 2 decimales para la comparación
+          eq(palletsPosiciones.idEmpresa, idEmpresa),
         ),
       });
 
       if (existingPosition) {
         throw new ConflictError(
-          `La posición de pallet Fila: ${fila}, Posición: ${posicion} ya existe.`,
+          `La posición de pallet Fila: ${fila}, Posición: ${posicion} ya existe para esta empresa.`,
         );
       }
 
@@ -122,6 +152,7 @@ router.post('/', verifyToken, renewToken, (req: AuthRequest, res, next) =>
           fila,
           posicion: posicion.toFixed(2), // Almacenar como string con 2 decimales
           habilitado,
+          idEmpresa, // Asignar idEmpresa
         })
         .returning(selectPalletPositionColumns);
 
@@ -141,6 +172,7 @@ router.post('/', verifyToken, renewToken, (req: AuthRequest, res, next) =>
         userId: req.user!.id,
         username: req.user!.username,
         realname: req.user!.realname,
+        idEmpresa: idEmpresa,
       });
 
       res
@@ -167,9 +199,10 @@ router.patch('/:id', verifyToken, renewToken, (req: AuthRequest, res, next) =>
       }
 
       const { habilitado } = validation.data;
+      const empresaFilter = getEmpresaFilterCondition(req);
 
       const existingPosition = await db.query.palletsPosiciones.findFirst({
-        where: eq(palletsPosiciones.id, id),
+        where: and(eq(palletsPosiciones.id, id), empresaFilter),
       });
 
       if (!existingPosition) {
@@ -179,7 +212,7 @@ router.patch('/:id', verifyToken, renewToken, (req: AuthRequest, res, next) =>
       const [updatedPositionRaw] = await db
         .update(palletsPosiciones)
         .set({ habilitado })
-        .where(eq(palletsPosiciones.id, id))
+        .where(and(eq(palletsPosiciones.id, id), empresaFilter))
         .returning(selectPalletPositionColumns);
 
       if (!updatedPositionRaw) {
@@ -198,6 +231,7 @@ router.patch('/:id', verifyToken, renewToken, (req: AuthRequest, res, next) =>
         userId: req.user!.id,
         username: req.user!.username,
         realname: req.user!.realname,
+        idEmpresa: updatedPosition.idEmpresa,
       });
 
       res.status(200).json({
@@ -219,20 +253,23 @@ router.delete('/:id', verifyToken, renewToken, (req: AuthRequest, res, next) =>
         throw new BadRequestError('ID de posición de pallet inválido.');
       }
 
+      const empresaFilter = getEmpresaFilterCondition(req);
+
       // 1. Obtener el registro antes de eliminarlo para el log
       const existingPosition = await db.query.palletsPosiciones.findFirst({
-        where: eq(palletsPosiciones.id, id),
+        where: and(eq(palletsPosiciones.id, id), empresaFilter),
       });
 
       if (!existingPosition) {
         throw new NotFoundError('Posición de pallet no encontrada.');
       }
 
-      // 2. VERIFICAR SI TIENE PRODUCTOS
+      // 2. VERIFICAR SI TIENE PRODUCTOS (filtrando por empresa)
       const productsInPosition = await db.query.palletsProductos.findFirst({
         where: and(
           eq(palletsProductos.fila, existingPosition.fila),
           eq(palletsProductos.posicion, existingPosition.posicion),
+          eq(palletsProductos.idEmpresa, existingPosition.idEmpresa),
         ),
       });
 
@@ -244,7 +281,7 @@ router.delete('/:id', verifyToken, renewToken, (req: AuthRequest, res, next) =>
 
       const [deletedPositionRaw] = await db
         .delete(palletsPosiciones)
-        .where(eq(palletsPosiciones.id, id))
+        .where(and(eq(palletsPosiciones.id, id), empresaFilter))
         .returning(selectPalletPositionColumns);
 
       if (!deletedPositionRaw) {
@@ -263,6 +300,7 @@ router.delete('/:id', verifyToken, renewToken, (req: AuthRequest, res, next) =>
         userId: req.user!.id,
         username: req.user!.username,
         realname: req.user!.realname,
+        idEmpresa: deletedPosition.idEmpresa,
       });
 
       res

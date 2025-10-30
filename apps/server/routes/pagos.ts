@@ -50,6 +50,7 @@ router.get('/', verifyToken, renewToken, checkAdminRole, async (req: AuthRequest
     }
 
     const { limit, offset, search, idEmpresa } = validation.data;
+    // Nota: Aunque solo admin puede acceder, permitimos filtrar por idEmpresa en el query.
     const result = await pagoService.getPagos(search, idEmpresa, limit, offset);
     res.json(result);
   } catch (error) {
@@ -106,17 +107,23 @@ router.put('/:id', verifyToken, renewToken, checkAdminRole, async (req: AuthRequ
 });
 
 // DELETE: Eliminar pago por ID
-router.delete('/:id', verifyToken, renewToken, checkAdminRole, async (req: AuthRequest, res, next) => {
-  try {
-    const idPago = parseInt(req.params.id, 10);
-    if (isNaN(idPago)) {
-      throw new BadRequestError('ID de pago inválido.');
+router.delete(
+  '/:id',
+  verifyToken,
+  renewToken,
+  checkAdminRole,
+  async (req: AuthRequest, res, next) => {
+    try {
+      const idPago = parseInt(req.params.id, 10);
+      if (isNaN(idPago)) {
+        throw new BadRequestError('ID de pago inválido.');
+      }
+      const deletedPago = await pagoService.deletePago(idPago);
+      res.json({ message: 'Pago eliminado exitosamente', pago: deletedPago });
+    } catch (error) {
+      next(error);
     }
-    const deletedPago = await pagoService.deletePago(idPago);
-    res.json({ message: 'Pago eliminado exitosamente', pago: deletedPago });
-  } catch (error) {
-    next(error);
-  }
-});
+  },
+);
 
 export default router;

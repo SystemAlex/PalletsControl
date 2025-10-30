@@ -52,7 +52,6 @@ async function createServer() {
   app.use('/api/auth', authRouter);
   app.use('/api/history', historyRouter);
   app.use('/api/users', usersRouter);
-  // Removed chessAccessRouter, chessValidationRouter, syncRouter, reportsRouter, commercialRouter
   app.use('/api/pallet-positions', palletPositionsRouter);
   app.use('/api/pallet-products', palletProductsRouter);
   app.use('/api/products', productsRouter);

@@ -33,7 +33,7 @@ export const renewToken = async (req: AuthRequest, res: Response, next: NextFunc
       realname: req.user.realname,
       role: req.user.role,
       mustChangePassword: req.user.mustChangePassword,
-      // Removed hasChessConfig and canViewOthers
+      idEmpresa: req.user.idEmpresa, // Incluir idEmpresa (ahora number)
     };
 
     // Determine token expiration based on mustChangePassword status

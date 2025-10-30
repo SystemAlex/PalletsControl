@@ -8,7 +8,7 @@ export interface AuthRequest extends Request {
     realname: string;
     role: UserRole;
     mustChangePassword?: boolean;
-    // Removed hasChessConfig and canViewOthers
+    idEmpresa: number; // CAMBIO: Ahora es number
   };
 }
 
@@ -19,7 +19,7 @@ export interface AuthenticatedUser {
   role: UserRole;
   mustChangePassword?: boolean;
   expiresAt?: number;
-  // Removed hasChessConfig and canViewOthers
+  idEmpresa: number; // CAMBIO: Ahora es number
 }
 
 export interface LoginRecord {

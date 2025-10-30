@@ -31,6 +31,7 @@ async function seed() {
         role: 'admin',
         mustChangePassword: false,
         isActive: true,
+        idEmpresa: 1, // CAMBIO: Asignado a Empresa 1
       },
       {
         username: 'Programador',
@@ -40,15 +41,17 @@ async function seed() {
         role: 'developer',
         mustChangePassword: false,
         isActive: true,
+        idEmpresa: 1, // CAMBIO: Asignado a Empresa 1
       },
       {
-        username: 'Mauro',
-        realname: 'Mauro Sanabria',
-        email: 'marioruben.mrs@gmail.com',
+        username: 'DemoUser',
+        realname: 'Usuario Demo',
+        email: 'demo@test.com',
         passwordHash: await bcrypt.hash('Clave123', 10),
         role: 'gerente',
         mustChangePassword: true,
         isActive: true,
+        idEmpresa: 1, // Asignado a Empresa 1
       },
     ];
 

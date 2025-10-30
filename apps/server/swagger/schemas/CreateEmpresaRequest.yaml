@@ -2,6 +2,8 @@ type: object
 required:
   - razonSocial
   - cuit
+  - email
+  - telefono
 properties:
   razonSocial:
     type: string
@@ -31,12 +33,10 @@ properties:
     example: 'Argentina'
   telefono:
     type: string
-    nullable: true
     example: '351 123-4567'
   email:
     type: string
     format: email
-    nullable: true
     example: 'info@nuevaempresa.com'
   sitioWeb:
     type: string

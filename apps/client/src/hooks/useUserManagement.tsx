@@ -14,12 +14,7 @@ import {
 import { UserApiResponse, ActiveUser, UserRole } from '../../../shared/types';
 import { UserFormData } from '../components/dialogs/UserDialog'; // Assuming this import path is correct
 
-export type SortColumn =
-  | 'username'
-  | 'realname'
-  | 'email'
-  | 'isActive'
-  | 'lastLoginAt'; // Removed 'des_personal'
+export type SortColumn = 'username' | 'realname' | 'email' | 'isActive' | 'lastLoginAt'; // Removed 'des_personal'
 type SortDirection = 'ascending' | 'descending';
 
 export function useUserManagement() {

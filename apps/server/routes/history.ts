@@ -12,6 +12,7 @@ const router = Router();
 router.get('/login', verifyToken, renewToken, async (req: AuthRequest, res, next) => {
   try {
     const userRole = req.user?.role as UserRole;
+    const requesterIdEmpresa = req.user?.idEmpresa;
 
     if (!userRole) {
       throw new UnauthorizedError('Usuario no autenticado');
@@ -29,7 +30,13 @@ router.get('/login', verifyToken, renewToken, async (req: AuthRequest, res, next
     } else if (userRole === 'developer') {
       rolesToIncludeInHistory = allAvailableRoles.filter((role) => role !== 'admin');
     } else {
-      return res.json({ history: [], totalCount: 0 });
+      // Gerente solo ve su propia empresa
+      if (!requesterIdEmpresa) {
+        return res.json({ history: [], totalCount: 0 });
+      }
+      rolesToIncludeInHistory = allAvailableRoles.filter(
+        (role) => role !== 'admin' && role !== 'developer',
+      );
     }
 
     const limit = Math.min(parseInt(req.query.limit as string) || 50, 500); // Max 500 records overall
@@ -46,6 +53,11 @@ router.get('/login', verifyToken, renewToken, async (req: AuthRequest, res, next
       conditions.push(inArray(users.role, rolesToIncludeInHistory));
     } else {
       return res.json({ history: [], totalCount: 0 });
+    }
+
+    // Aplicar filtro de empresa si no es admin
+    if (userRole !== 'admin' && requesterIdEmpresa) {
+      conditions.push(eq(users.idEmpresa, requesterIdEmpresa));
     }
 
     if (searchQuery) {
