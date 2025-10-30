@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import {
   FluentProvider,
-  teamsDarkTheme,
-  teamsLightTheme,
   Toaster,
   tokens,
   useThemeClassName,
   makeResetStyles,
 } from '@fluentui/react-components';
-import { customTheme } from './customTheme';
+import { palletsDarkTheme, palletsLightTheme } from './customTheme';
 
 // Estilos globales para scrollbar
 const useGlobalScrollbarStyles = makeResetStyles({
@@ -18,23 +16,24 @@ const useGlobalScrollbarStyles = makeResetStyles({
   },
 });
 
+// Provider principal
 export const ThemeWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState(() => {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const base = prefersDark ? teamsDarkTheme : teamsLightTheme;
-    return customTheme(base);
+    return prefersDark ? palletsDarkTheme : palletsLightTheme;
   });
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-color-scheme: dark)');
     const handler = () => {
-      const newBase = media.matches ? teamsDarkTheme : teamsLightTheme;
-      setTheme(customTheme(newBase));
+      const newTheme = media.matches ? palletsDarkTheme : palletsLightTheme;
+      setTheme(newTheme);
     };
     media.addEventListener('change', handler);
     return () => media.removeEventListener('change', handler);
   }, []);
 
+  // Componente que aplica la clase de tema al <body>
   const ApplyThemeToBody: React.FC = () => {
     const themeClass = useThemeClassName();
     useEffect(() => {
