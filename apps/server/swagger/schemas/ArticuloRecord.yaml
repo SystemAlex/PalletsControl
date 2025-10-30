@@ -1,0 +1,45 @@
+type: object
+properties:
+  idArticulo:
+    type: integer
+    example: 1
+  desArticulo:
+    type: string
+    example: 'PLANCHETA'
+  unidadesBulto:
+    type: integer
+    example: 1
+  anulado:
+    type: boolean
+    example: false
+  esCombo:
+    type: boolean
+    example: false
+  idPresentacionBulto:
+    type: string
+    example: 'UN'
+  idPresentacionUnidad:
+    type: string
+    example: ''
+  codBarraBulto:
+    type: string
+    example: ''
+  bultosPallet:
+    type: integer
+    example: 0
+  pesoBulto:
+    type: number
+    format: float
+    example: 0.1
+  categoria:
+    type: string
+    nullable: true
+    example: 'BISCUITS'
+  subCategoria:
+    type: string
+    nullable: true
+    example: 'GALLETITAS DULCES'
+  marca:
+    type: string
+    nullable: true
+    example: 'VARIEDAD'

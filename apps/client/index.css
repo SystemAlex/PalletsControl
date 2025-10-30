@@ -1,0 +1,43 @@
+@font-face {
+  font-family: 'Aptos Display';
+  src: url('/fonts/AptosDisplay.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Aptos Display';
+  src: url('/fonts/AptosDisplayBold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Aptos Display';
+  src: url('/fonts/AptosDisplayItalic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Aptos Display';
+  src: url('/fonts/AptosDisplayBoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+html {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[class*='backdrop'] {
+  backdrop-filter: blur(7px);
+}

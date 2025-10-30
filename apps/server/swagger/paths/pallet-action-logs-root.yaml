@@ -1,0 +1,78 @@
+get:
+  summary: Obtener el registro de acciones de pallets
+  tags:
+    - Pallets
+  security:
+    - cookieAuth: []
+  parameters:
+    - in: query
+      name: limit
+      schema:
+        type: integer
+        default: 20
+        minimum: 1
+        maximum: 100
+      description: Número máximo de registros a devolver.
+    - in: query
+      name: offset
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+      description: Número de registros a omitir.
+    - in: query
+      name: search
+      schema:
+        type: string
+      description: Término de búsqueda para descripción, usuario o tipo de acción.
+    - in: query
+      name: actionType
+      schema:
+        type: string
+        enum:
+          [
+            'CREATE_POSITION',
+            'UPDATE_POSITION_STATUS',
+            'DELETE_POSITION',
+            'ADD_PRODUCT',
+            'UPDATE_PRODUCT',
+            'DELETE_PRODUCT',
+          ]
+      description: Filtrar por tipo de acción.
+    - in: query
+      name: startDate
+      schema:
+        type: string
+        format: date
+      description: Fecha de inicio para filtrar registros (YYYY-MM-DD).
+    - in: query
+      name: endDate
+      schema:
+        type: string
+        format: date
+      description: Fecha de fin para filtrar registros (YYYY-MM-DD).
+  responses:
+    '200':
+      description: Registro de acciones de pallets recuperado exitosamente
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/PalletActionLogsResponse.yaml'
+    '400':
+      description: Parámetros de consulta inválidos
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '401':
+      description: No autorizado / Usuario sin permisos
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '500':
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'

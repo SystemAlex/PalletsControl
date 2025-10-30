@@ -1,0 +1,49 @@
+type: object
+properties:
+  id:
+    type: integer
+    example: 1
+  palletProductId:
+    type: integer
+    nullable: true
+    example: 101
+  palletPositionId:
+    type: integer
+    nullable: true
+    example: 5
+  actionType:
+    type: string
+    enum:
+      [
+        'CREATE_POSITION',
+        'UPDATE_POSITION_STATUS',
+        'DELETE_POSITION',
+        'ADD_PRODUCT',
+        'UPDATE_PRODUCT',
+        'DELETE_PRODUCT',
+      ]
+    example: 'ADD_PRODUCT'
+  description:
+    type: string
+    example: 'Producto Subido: GALLETITAS (905029) en A1'
+  oldValue:
+    type: string
+    nullable: true
+    example: '{"bultos": 10, "pallets": false}'
+  newValue:
+    type: string
+    nullable: true
+    example: '{"bultos": 20, "pallets": true}'
+  userId:
+    type: integer
+    example: 1
+  username:
+    type: string
+    example: 'SystemAlex'
+  realname:
+    type: string
+    example: 'Alexandro Beese'
+  timestamp:
+    type: string
+    format: date-time
+    example: '2023-10-27T10:00:00.000Z'

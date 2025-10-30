@@ -1,0 +1,28 @@
+type: object
+required:
+  - username
+  - realname
+  - password
+  - role
+properties:
+  username:
+    type: string
+    minLength: 3
+    pattern: '^\S+$' # No spaces allowed
+    description: Nombre de usuario único sin espacios.
+    example: newuser
+  realname:
+    type: string
+    example: Nuevo Usuario
+  password:
+    type: string
+    example: Clave123
+  role:
+    type: string
+    enum: ['admin', 'developer', 'deposito']
+    example: deposito
+  email:
+    type: string
+    format: email
+    nullable: true
+    example: newuser@example.com

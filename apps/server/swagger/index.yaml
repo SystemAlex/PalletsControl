@@ -1,0 +1,108 @@
+openapi: 3.0.0
+info:
+  title: API Documentation
+  version: 1.0.0
+  description: Documentación completa de la API de tu aplicación.
+servers:
+  - url: /api
+    description: Servidor Alquimia Web
+
+paths:
+  /auth/register:
+    $ref: './paths/auth-register.yaml'
+  /auth/login:
+    $ref: './paths/auth-login.yaml'
+  /auth/logout:
+    $ref: './paths/auth-logout.yaml'
+  /auth/change-password:
+    $ref: './paths/auth-change-password.yaml'
+  /auth/me:
+    $ref: './paths/auth-me.yaml'
+  /history/login:
+    $ref: './paths/history-login.yaml'
+  /users/active:
+    $ref: './paths/users-active.yaml'
+  /users:
+    $ref: './paths/users-root.yaml'
+  /users/{id}:
+    $ref: './paths/users-id.yaml'
+  /users/{id}/status:
+    $ref: './paths/users-id-status.yaml'
+  /users/{id}/reset-password:
+    $ref: './paths/users-id-reset-password.yaml'
+  # Removed Chess Access and Validation paths
+  # Removed Sync paths
+  # Removed Commercial paths
+  # Removed Reports paths
+  /pallet-positions:
+    $ref: './paths/pallet-positions-root.yaml'
+  /pallet-positions/{id}:
+    $ref: './paths/pallet-positions-id.yaml'
+  /pallet-products:
+    $ref: './paths/pallet-products-root.yaml'
+  /pallet-products/{id}:
+    $ref: './paths/pallet-products-id.yaml'
+  /products:
+    $ref: './paths/products-root.yaml'
+  /products/{id}:
+    $ref: './paths/products-id.yaml'
+  /pallet-action-logs:
+    $ref: './paths/pallet-action-logs-root.yaml'
+  /hello:
+    $ref: './paths/hello.yaml'
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: authToken
+      description: JWT token en la cookie 'authToken'
+  schemas:
+    LoginRequest:
+      $ref: './schemas/LoginRequest.yaml'
+    RegisterRequest:
+      $ref: './schemas/RegisterRequest.yaml'
+    ChangePasswordRequest:
+      $ref: './schemas/ChangePasswordRequest.yaml'
+    UserResponse:
+      $ref: './schemas/UserResponse.yaml'
+    LoginHistoryRecord:
+      $ref: './schemas/LoginHistoryRecord.yaml'
+    UserListResponse:
+      $ref: './schemas/UserListResponse.yaml'
+    CreateUserRequest:
+      $ref: './schemas/CreateUserRequest.yaml'
+    UpdateUserRequest:
+      $ref: './schemas/UpdateUserRequest.yaml'
+    ToggleStatusRequest:
+      $ref: './schemas/ToggleStatusRequest.yaml'
+    # Removed Chess Access/Validation schemas
+    # Removed Sync Status schemas
+    # Removed Commercial/Client/Order/Report schemas
+    ArticuloRecord:
+      $ref: './schemas/ArticuloRecord.yaml'
+    MessageResponse:
+      $ref: './schemas/MessageResponse.yaml'
+    ErrorResponse:
+      $ref: './schemas/ErrorResponse.yaml'
+    PalletPositionRecord:
+      $ref: './schemas/PalletPositionRecord.yaml'
+    CreatePalletPositionRequest:
+      $ref: './schemas/CreatePalletPositionRequest.yaml'
+    UpdatePalletPositionRequest:
+      $ref: './schemas/UpdatePalletPositionRequest.yaml'
+    PalletProductDetail:
+      $ref: './schemas/PalletProductDetail.yaml'
+    CreateProductInPalletRequest:
+      $ref: './schemas/CreateProductInPalletRequest.yaml'
+    ProductInPalletResponse:
+      $ref: './schemas/ProductInPalletResponse.yaml'
+    ProductResponse:
+      $ref: './schemas/ProductResponse.yaml'
+    UpdateProductInPalletRequest:
+      $ref: './schemas/UpdateProductInPalletRequest.yaml'
+    PalletActionLogRecord:
+      $ref: './schemas/PalletActionLogRecord.yaml'
+    PalletActionLogsResponse:
+      $ref: './schemas/PalletActionLogsResponse.yaml'

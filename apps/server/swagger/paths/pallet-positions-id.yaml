@@ -1,0 +1,106 @@
+patch:
+  summary: Actualizar el estado de habilitado de una posición de pallet por ID
+  tags:
+    - Pallets
+  security:
+    - cookieAuth: []
+  parameters:
+    - in: path
+      name: id
+      schema:
+        type: integer
+      required: true
+      description: ID de la posición de pallet
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/UpdatePalletPositionRequest.yaml'
+  responses:
+    '200':
+      description: Estado de posición de pallet actualizado exitosamente
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Estado de posición de pallet actualizado exitosamente
+              position:
+                $ref: '../schemas/PalletPositionRecord.yaml'
+    '400':
+      description: Solicitud inválida
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '401':
+      description: No autorizado / Usuario sin permisos
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '404':
+      description: Posición de pallet no encontrada
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '500':
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+delete:
+  summary: Eliminar una posición de pallet por ID
+  tags:
+    - Pallets
+  security:
+    - cookieAuth: []
+  parameters:
+    - in: path
+      name: id
+      schema:
+        type: integer
+      required: true
+      description: ID de la posición de pallet
+  responses:
+    '200':
+      description: Posición de pallet eliminada exitosamente
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Posición de pallet eliminada exitosamente
+              position:
+                $ref: '../schemas/PalletPositionRecord.yaml'
+    '400':
+      description: Solicitud inválida
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '401':
+      description: No autorizado / Usuario sin permisos
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '404':
+      description: Posición de pallet no encontrada
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '500':
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'

@@ -1,0 +1,8 @@
+type: object
+properties:
+  message:
+    type: string
+    example: 'Error interno del servidor'
+  statusCode:
+    type: integer
+    example: 500

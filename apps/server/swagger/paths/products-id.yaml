@@ -1,0 +1,38 @@
+get:
+  summary: Obtener un artículo por su ID
+  tags:
+    - Artículos
+  security:
+    - cookieAuth: []
+  parameters:
+    - in: path
+      name: id
+      schema:
+        type: integer
+      required: true
+      description: ID del artículo a obtener
+  responses:
+    '200':
+      description: Artículo recuperado exitosamente
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ProductResponse.yaml'
+    '401':
+      description: No autorizado / Usuario sin permisos
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '404':
+      description: Artículo no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '500':
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'

@@ -1,0 +1,39 @@
+type: object
+required:
+  - fila
+  - posicion
+  - codigo
+  - bultos
+  - pallets
+  - vencimiento
+properties:
+  fila:
+    type: string
+    minLength: 1
+    maxLength: 2
+    example: A1
+  posicion:
+    type: number
+    format: float
+    minimum: 0
+    example: 1.00
+  codigo:
+    type: integer
+    minimum: 1
+    example: 905029
+  bultos:
+    type: integer
+    minimum: 0
+    example: 50
+  pallets:
+    type: boolean
+    example: true
+  vencimiento:
+    type: string
+    format: date
+    nullable: true
+    example: '2025-07-15'
+  observaciones:
+    type: string
+    nullable: true
+    example: 'Producto en buen estado'

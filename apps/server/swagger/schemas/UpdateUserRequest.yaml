@@ -1,0 +1,22 @@
+type: object
+required:
+  - realname
+  - role
+  - isActive
+properties:
+  realname:
+    type: string
+    minLength: 3
+    example: Nombre Actualizado
+  email:
+    type: string
+    format: email
+    nullable: true
+    example: updated@example.com
+  role:
+    type: string
+    enum: ['admin', 'developer', 'deposito']
+    example: developer
+  isActive:
+    type: boolean
+    example: true

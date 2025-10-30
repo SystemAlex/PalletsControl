@@ -1,0 +1,102 @@
+get:
+  summary: Obtener lista de usuarios con paginación
+  tags:
+    - Usuarios
+  security:
+    - cookieAuth: []
+  parameters:
+    - in: query
+      name: limit
+      schema:
+        type: integer
+        default: 20
+        minimum: 1
+        maximum: 100
+      description: Número máximo de usuarios a devolver.
+    - in: query
+      name: offset
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+      description: Número de usuarios a omitir.
+  responses:
+    '200':
+      description: Lista de usuarios recuperada exitosamente
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/UserListResponse.yaml'
+    '400':
+      description: Parámetros de paginación inválidos
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '401':
+      description: No autorizado / Usuario no autenticado
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '500':
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+post:
+  summary: Crear un nuevo usuario
+  tags:
+    - Usuarios
+  security:
+    - cookieAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/CreateUserRequest.yaml'
+  responses:
+    '201':
+      description: Usuario creado exitosamente
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Usuario creado exitosamente
+              user:
+                type: object
+                properties:
+                  id: { type: integer, example: 1 }
+                  username: { type: string, example: 'newuser' }
+                  realname: { type: string, example: 'Nuevo Usuario' }
+                  role: { type: string, example: 'vendedor' }
+                  isActive: { type: boolean, example: true }
+    '400':
+      description: Datos de usuario inválidos
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '401':
+      description: No autorizado / Sin permisos para crear este rol
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '409':
+      description: El nombre de usuario ya existe
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '500':
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'

@@ -1,0 +1,106 @@
+delete:
+  summary: Eliminar un producto de un pallet por ID
+  tags:
+    - Pallets
+  security:
+    - cookieAuth: []
+  parameters:
+    - in: path
+      name: id
+      schema:
+        type: integer
+      required: true
+      description: ID del producto en el pallet a eliminar
+  responses:
+    '200':
+      description: Producto eliminado del pallet exitosamente
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Producto eliminado del pallet exitosamente
+              product:
+                $ref: '../schemas/ProductInPalletResponse.yaml'
+    '400':
+      description: Solicitud inválida
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '401':
+      description: No autorizado / Usuario sin permisos
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '404':
+      description: Producto no encontrado en el pallet
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '500':
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+patch:
+  summary: Actualizar un producto en un pallet por ID
+  tags:
+    - Pallets
+  security:
+    - cookieAuth: []
+  parameters:
+    - in: path
+      name: id
+      schema:
+        type: integer
+      required: true
+      description: ID del producto en el pallet a actualizar
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/UpdateProductInPalletRequest.yaml'
+  responses:
+    '200':
+      description: Producto actualizado exitosamente
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Producto actualizado exitosamente
+              product:
+                $ref: '../schemas/ProductInPalletResponse.yaml'
+    '400':
+      description: Datos de producto inválidos
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '401':
+      description: No autorizado / Usuario sin permisos
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '404':
+      description: Producto no encontrado en el pallet
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '500':
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'

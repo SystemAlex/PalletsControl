@@ -1,0 +1,13 @@
+type: object
+required:
+  - username
+  - password
+properties:
+  username:
+    type: string
+    pattern: '^\S+$' # No spaces allowed
+    description: Nombre de usuario sin espacios.
+    example: Usuario1
+  password:
+    type: string
+    example: LaContrseñaSegura123

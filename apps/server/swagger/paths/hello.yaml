@@ -1,0 +1,21 @@
+get:
+  summary: Saludo de prueba
+  tags:
+    - General
+  responses:
+    '200':
+      description: Mensaje de saludo
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Hola desde el servidor Express!
+    '500':
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'

@@ -1,0 +1,46 @@
+post:
+  summary: Registrar un nuevo usuario
+  tags:
+    - Autenticación
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/RegisterRequest.yaml'
+  responses:
+    '201':
+      description: Usuario creado exitosamente
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Usuario creado exitosamente
+              user:
+                type: object
+                properties:
+                  id: { type: integer, example: 1 }
+                  username: { type: string, example: 'newuser' }
+                  realname: { type: string, example: 'Nuevo Usuario' }
+                  role: { type: string, example: 'vendedor' }
+    '400':
+      description: Datos de registro inválidos
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '409':
+      description: El nombre de usuario ya existe
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '500':
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'

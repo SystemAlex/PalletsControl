@@ -1,0 +1,16 @@
+type: object
+properties:
+  id:
+    type: integer
+    example: 1
+  fila:
+    type: string
+    maxLength: 2
+    example: A1
+  posicion:
+    type: number
+    format: float
+    example: 1.00
+  habilitado:
+    type: boolean
+    example: true

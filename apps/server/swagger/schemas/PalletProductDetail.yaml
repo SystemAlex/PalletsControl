@@ -1,0 +1,45 @@
+type: object
+properties:
+  id:
+    type: integer
+    example: 1
+  fila:
+    type: string
+    maxLength: 2
+    example: A1
+  posicion:
+    type: number
+    format: float
+    example: 1.00
+  habilitado:
+    type: boolean
+    example: true
+  products:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        codigo:
+          type: integer
+          example: 905029
+        desArticulo:
+          type: string
+          example: 'VARIEDAD 20UX390G'
+        bultos:
+          type: integer
+          example: 50
+        pallets:
+          type: boolean
+          example: true
+        vencimiento:
+          type: string
+          format: date
+          nullable: true
+          example: '2025-07-15'
+        observaciones:
+          type: string
+          nullable: true
+          example: 'Producto en buen estado'

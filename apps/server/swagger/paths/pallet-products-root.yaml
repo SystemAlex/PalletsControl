@@ -1,0 +1,76 @@
+get:
+  summary: Obtener todas las posiciones de pallets habilitadas con sus productos
+  tags:
+    - Pallets
+  security:
+    - cookieAuth: []
+  responses:
+    '200':
+      description: Lista de posiciones de pallets con productos recuperada exitosamente
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/PalletProductDetail.yaml'
+    '401':
+      description: No autorizado / Usuario sin permisos
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '500':
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+post:
+  summary: Añadir un producto a una posición de pallet
+  tags:
+    - Pallets
+  security:
+    - cookieAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/CreateProductInPalletRequest.yaml'
+  responses:
+    '201':
+      description: Producto añadido al pallet exitosamente
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Producto añadido al pallet exitosamente
+              product:
+                $ref: '../schemas/ProductInPalletResponse.yaml'
+    '400':
+      description: Datos de producto inválidos
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '401':
+      description: No autorizado / Usuario sin permisos
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '404':
+      description: Posición de pallet no encontrada o inhabilitada
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'
+    '500':
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/ErrorResponse.yaml'

@@ -1,0 +1,23 @@
+type: object
+properties:
+  id:
+    type: integer
+    example: 1
+  username:
+    type: string
+    example: Usuario1
+  realname:
+    type: string
+    example: Nombre Usuario
+  role:
+    type: string
+    enum: ['admin', 'developer', 'deposito']
+    example: developer
+  mustChangePassword:
+    type: boolean
+    example: false
+  expiresAt:
+    type: integer
+    description: Timestamp de expiración del token en milisegundos (solo en /auth/login y /auth/me)
+    example: 1678886400000
+  # Removed hasChessConfig

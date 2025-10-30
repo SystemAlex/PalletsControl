@@ -1,0 +1,41 @@
+type: object
+properties:
+  users:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: Usuario1
+        realname:
+          type: string
+          example: Nombre Usuario
+        email:
+          type: string
+          format: email
+          nullable: true
+          example: usuario1@email.com
+        role:
+          type: string
+          enum:
+            ['admin', 'developer', 'deposito']
+          example: developer
+        isActive:
+          type: boolean
+          example: true
+        lastLoginAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2023-10-27T09:30:00.000Z'
+        createdAt:
+          type: string
+          format: date-time
+          example: '2023-10-27T09:00:00.000Z'
+  totalCount:
+    type: integer
+    example: 10

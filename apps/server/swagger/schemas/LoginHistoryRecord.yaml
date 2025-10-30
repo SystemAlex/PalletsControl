@@ -1,0 +1,28 @@
+type: object
+properties:
+  id:
+    type: integer
+    example: 1
+  timestamp:
+    type: string
+    format: date-time
+    example: '2023-10-27T10:00:00.000Z'
+  success:
+    type: boolean
+    example: true
+  username:
+    type: string
+    nullable: true
+    example: Usuario1
+  realname:
+    type: string
+    nullable: true
+    example: Nombre Usuario
+  role:
+    type: string
+    nullable: true
+    enum: ['admin', 'developer', 'deposito']
+    example: developer
+  isActive:
+    type: boolean
+    example: true

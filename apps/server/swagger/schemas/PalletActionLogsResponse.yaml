@@ -1,0 +1,9 @@
+type: object
+properties:
+  logs:
+    type: array
+    items:
+      $ref: './PalletActionLogRecord.yaml'
+  totalCount:
+    type: integer
+    example: 50

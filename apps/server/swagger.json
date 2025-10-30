@@ -1,0 +1,43 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Alquimia Web API",
+    "version": "1.0.0",
+    "description": "Documentación de la API de Alquimia Web"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor de desarrollo local"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Endpoint de prueba",
+        "description": "Retorna un mensaje de bienvenida.",
+        "responses": {
+          "200": {
+            "description": "Mensaje de bienvenida exitoso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "¡Bienvenido a la API de Alquimia Web!"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {}
+  }
+}
