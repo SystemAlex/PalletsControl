@@ -61,6 +61,18 @@ export default function UserManagementPage() {
   const styles = useStyles();
   const { setHeaderContent, setHeaderText, isMobile } = useMainLayoutContext();
 
+  const [isUserDialogOpen, setUserDialogOpen] = useState(false);
+  const [userToEdit, setUserToEdit] = useState<UserFormData | null>(null);
+  const [confirmation, setConfirmation] = useState<{
+    type: 'status' | 'reset';
+    user: UserApiResponse;
+  } | null>(null);
+
+  const handleCloseUserDialog = useCallback(() => {
+    setUserDialogOpen(false);
+    setUserToEdit(null);
+  }, []);
+
   const {
     users,
     totalCount,
@@ -81,14 +93,7 @@ export default function UserManagementPage() {
     toggleStatusMutation,
     resetPasswordMutation,
     handleApiError,
-  } = useUserManagement();
-
-  const [isUserDialogOpen, setUserDialogOpen] = useState(false);
-  const [userToEdit, setUserToEdit] = useState<UserFormData | null>(null);
-  const [confirmation, setConfirmation] = useState<{
-    type: 'status' | 'reset';
-    user: UserApiResponse;
-  } | null>(null);
+  } = useUserManagement(handleCloseUserDialog); // Pass the close function here
 
   const handleSearchChange = useCallback(
     (_: SearchBoxChangeEvent, data: InputOnChangeData) => {
@@ -200,7 +205,7 @@ export default function UserManagementPage() {
 
       <UserDialog
         open={isUserDialogOpen}
-        onOpenChange={setUserDialogOpen}
+        onOpenChange={handleCloseUserDialog} // Use the new close handler
         onSubmit={handleUserSubmit}
         isSubmitting={createUserIsPending || updateUserIsPending}
         userToEdit={userToEdit}

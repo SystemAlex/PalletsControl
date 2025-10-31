@@ -1,3 +1,5 @@
+export type FrecuenciaPago = 'mensual' | 'anual' | 'permanente';
+
 export interface EmpresaRecord {
   idEmpresa: number;
   razonSocial: string;
@@ -11,9 +13,14 @@ export interface EmpresaRecord {
   email: string | null;
   sitioWeb: string | null;
   sector: string | null;
-  logoUrl: string | null; // Nuevo campo
+  logoUrl: string | null;
   fechaAlta: string; // YYYY-MM-DD
   activo: boolean;
+  frecuenciaPago: FrecuenciaPago;
+  // Payment Status Fields
+  lastPaymentDate: string | null; // YYYY-MM-DD
+  nextPaymentDate: string | null; // YYYY-MM-DD
+  isBlocked: boolean;
 }
 
 export interface CreateEmpresaPayload {
@@ -28,8 +35,9 @@ export interface CreateEmpresaPayload {
   email?: string | null;
   sitioWeb?: string | null;
   sector?: string | null;
-  logoUrl?: string | null; // Nuevo campo
+  logoUrl?: string | null;
   activo?: boolean;
+  frecuenciaPago?: FrecuenciaPago;
 }
 
 export interface UpdateEmpresaPayload {
@@ -44,6 +52,7 @@ export interface UpdateEmpresaPayload {
   email?: string | null;
   sitioWeb?: string | null;
   sector?: string | null;
-  logoUrl?: string | null; // Nuevo campo
+  logoUrl?: string | null;
   activo?: boolean;
+  frecuenciaPago?: FrecuenciaPago;
 }

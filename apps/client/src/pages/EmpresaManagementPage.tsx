@@ -17,7 +17,7 @@ import { EmpresaTable } from '../components/empresa-management/EmpresaTable';
 import { EmpresaManagementHeader } from '../components/empresa-management/EmpresaManagementHeader';
 import { SearchBoxChangeEvent, InputOnChangeData } from '@fluentui/react-components';
 import { SpinnerCustom } from '../components/ui/SpinnerCustom';
-import { Navigate } from 'react-router-dom';
+import { PagoDialog } from '../components/dialogs/PagoDialog';
 
 const useStyles = makeStyles({
   root: {
@@ -52,29 +52,30 @@ export default function EmpresaManagementPage() {
   const styles = useStyles();
   const { setHeaderContent, setHeaderText, isMobile } = useMainLayoutContext();
 
+  const [isEmpresaDialogOpen, setEmpresaDialogOpen] = useState(false);
+  const [empresaToEdit, setEmpresaToEdit] = useState<EmpresaFormData | null>(null);
+  const [empresaToToggleStatus, setEmpresaToToggleStatus] = useState<EmpresaRecord | null>(null);
+  const [empresaToRegisterPayment, setEmpresaToRegisterPayment] = useState<EmpresaRecord | null>(null);
+
+  const handleCloseEmpresaDialog = useCallback(() => {
+    setEmpresaDialogOpen(false);
+    setEmpresaToEdit(null);
+  }, []);
+
   const {
     empresas,
-    totalCount,
     totalPages,
     isLoadingEmpresas,
-    isFetchingEmpresas,
     empresasError,
     searchQuery,
     setSearchQuery,
     page,
     setPage,
-    sortState,
-    toggleSort,
     handleEmpresaSubmit,
     updateEmpresaMutation, // Usaremos updateMutation para el borrado lógico
     isAnyMutationPending,
     canManageEmpresas,
-    handleApiError,
-  } = useEmpresaManagement();
-
-  const [isEmpresaDialogOpen, setEmpresaDialogOpen] = useState(false);
-  const [empresaToEdit, setEmpresaToEdit] = useState<EmpresaFormData | null>(null);
-  const [empresaToToggleStatus, setEmpresaToToggleStatus] = useState<EmpresaRecord | null>(null);
+  } = useEmpresaManagement(handleCloseEmpresaDialog); // Pass the close function here
 
   // --- Handlers ---
 
@@ -108,8 +109,14 @@ export default function EmpresaManagementPage() {
       sector: empresa.sector,
       logoUrl: empresa.logoUrl,
       activo: empresa.activo,
+      frecuenciaPago: empresa.frecuenciaPago,
     });
     setEmpresaDialogOpen(true);
+  }, []);
+
+  // NEW HANDLER
+  const handleRegisterPayment = useCallback((empresa: EmpresaRecord) => {
+    setEmpresaToRegisterPayment(empresa);
   }, []);
 
   // Cambiamos handleConfirmDelete para manejar el toggle de estado
@@ -183,7 +190,8 @@ export default function EmpresaManagementPage() {
           <EmpresaTable
             empresas={empresas}
             onEditEmpresa={handleEditEmpresa}
-            onConfirmDelete={handleConfirmToggleStatus} // Usar el nuevo handler
+            onConfirmDelete={handleConfirmToggleStatus} // Usar el handler de toggle
+            onRegisterPayment={handleRegisterPayment}
             isAnyMutationPending={isAnyMutationPending}
           />
         </div>
@@ -202,7 +210,7 @@ export default function EmpresaManagementPage() {
 
       <EmpresaDialog
         open={isEmpresaDialogOpen}
-        onOpenChange={setEmpresaDialogOpen}
+        onOpenChange={handleCloseEmpresaDialog} // Use the new close handler
         onSubmit={handleEmpresaSubmit}
         isSubmitting={isAnyMutationPending}
         empresaToEdit={empresaToEdit}
@@ -215,8 +223,22 @@ export default function EmpresaManagementPage() {
           onConfirm={confirmToggleStatus}
           title={`Confirmar ${empresaToToggleStatus.activo ? 'Desactivación' : 'Reactivación'} de Empresa`}
           message={`¿Estás seguro de que quieres ${empresaToToggleStatus.activo ? 'desactivar' : 'reactivar'} la empresa "${empresaToToggleStatus.razonSocial}" (CUIT: ${empresaToToggleStatus.cuit})?`}
-          message2={empresaToToggleStatus.activo ? "La empresa pasará a estado 'Inactiva' y sus usuarios no podrán iniciar sesión." : "La empresa pasará a estado 'Activa' y sus usuarios podrán iniciar sesión."}
+          message2={
+            empresaToToggleStatus.activo
+              ? "La empresa pasará a estado 'Inactiva' y sus usuarios no podrán iniciar sesión."
+              : "La empresa pasará a estado 'Activa' y sus usuarios podrán iniciar sesión."
+          }
           isDestructive={empresaToToggleStatus.activo}
+        />
+      )}
+      
+      {empresaToRegisterPayment && (
+        <PagoDialog
+          open={!!empresaToRegisterPayment}
+          onOpenChange={() => setEmpresaToRegisterPayment(null)}
+          idEmpresa={empresaToRegisterPayment.idEmpresa}
+          razonSocial={empresaToRegisterPayment.razonSocial}
+          frecuenciaPago={empresaToRegisterPayment.frecuenciaPago}
         />
       )}
     </div>

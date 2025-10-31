@@ -48,3 +48,7 @@ properties:
   activo:
     type: boolean
     example: false
+  frecuenciaPago:
+    type: string
+    enum: ['mensual', 'anual', 'permanente']
+    example: 'anual'

@@ -19,6 +19,8 @@ const checkAdminRole = (req: AuthRequest, _res: Response, next: NextFunction) =>
 };
 
 // Esquemas de validación
+const frecuenciaPagoEnum = z.enum(['mensual', 'anual', 'permanente']); // Define enum
+
 const createEmpresaSchema = z.object({
   razonSocial: z.string().min(1, 'Razón Social es obligatoria'),
   nombreFantasia: z.string().nullable().optional(),
@@ -33,6 +35,7 @@ const createEmpresaSchema = z.object({
   sector: z.string().nullable().optional(),
   logoUrl: z.string().nullable().optional(), // Nuevo campo
   activo: z.boolean().optional(),
+  frecuenciaPago: frecuenciaPagoEnum.optional(), // NEW
 });
 
 const updateEmpresaSchema = z.object({
@@ -49,6 +52,7 @@ const updateEmpresaSchema = z.object({
   sector: z.string().nullable().optional(),
   logoUrl: z.string().nullable().optional(), // Nuevo campo
   activo: z.boolean().optional(),
+  frecuenciaPago: frecuenciaPagoEnum.optional(), // NEW
 });
 
 const getEmpresasSchema = z.object({

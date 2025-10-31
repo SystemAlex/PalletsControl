@@ -7,7 +7,7 @@ import {
 import { hexA } from '../utils/helper';
 
 // Paleta base, color base #22B42B
-export const palletsTheme: BrandVariants = {
+/* export const palletsTheme: BrandVariants = {
   10: '#020401',
   20: '#111C0D',
   30: '#162F14',
@@ -24,6 +24,26 @@ export const palletsTheme: BrandVariants = {
   140: '#84D07A',
   150: '#A3DC99',
   160: '#C0E7B8',
+}; */
+
+// Paleta base, color base #7B2CBF
+const palletsTheme: BrandVariants = {
+  10: '#040206',
+  20: '#1E1128',
+  30: '#331848',
+  40: '#441E64',
+  50: '#552380',
+  60: '#67279E',
+  70: '#7A2BBD',
+  80: '#873FC5',
+  90: '#9452CB',
+  100: '#A064D1',
+  110: '#AC76D6',
+  120: '#B887DC',
+  130: '#C399E2',
+  140: '#CEABE7',
+  150: '#D9BDED',
+  160: '#E4CFF2',
 };
 
 // Tema claro base

@@ -14,60 +14,18 @@ import {
   tokens,
   Title3,
   Tooltip,
+  mergeClasses,
 } from '@fluentui/react-components';
 import { Edit24Regular, KeyReset24Regular, ToggleLeft24Regular } from '@fluentui/react-icons';
 import { UserApiResponse, UserRole } from '../../../../shared/types';
 import { capitalize, formatDateTime } from '../../utils/helper';
 import { DateToolTip } from '../ui/DateToolTip';
 import { SortColumn } from '../../hooks/useUserManagement'; // Import SortColumn
+import { useCommonStyles } from '../../theme/commonStyles';
 
 const useStyles = makeStyles({
-  table: {
-    tableLayout: 'auto',
+  tableOver: {
     overflowY: 'auto',
-  },
-  tableHeaderSticky: {},
-  row: { '&:hover .action-buttons': { opacity: 1, pointerEvents: 'auto' }, height: '52px' },
-  rowTitle: {
-    fontWeight: '600',
-    backgroundColor: tokens.colorBrandBackground,
-    color: tokens.colorNeutralForegroundOnBrand,
-    position: 'sticky',
-    top: '0px',
-    zIndex: 1,
-    textAlign: 'center',
-    '&:has(span)': {
-      backgroundColor: tokens.colorBrandBackgroundSelected,
-    },
-    '&:hover': {
-      backgroundColor: tokens.colorBrandBackgroundHover,
-    },
-    '&:active': {
-      backgroundColor: tokens.colorBrandBackgroundPressed,
-    },
-    '& > *': {
-      display: 'grid',
-      gridTemplateColumns: '1fr 12px',
-      width: 'calc(100%)',
-      whiteSpace: 'pre',
-    },
-  },
-  cellCenter: {
-    textAlign: 'center',
-    '& > *': { textAlign: 'center', justifyContent: 'center' },
-  },
-  cellActions: {
-    fontWeight: '600',
-    backgroundColor: tokens.colorBrandBackground,
-    color: tokens.colorNeutralForegroundOnBrand,
-    '& > *': { textAlign: 'center', justifyContent: 'center' },
-  },
-  actionButtons: {
-    display: 'flex',
-    columnGap: '8px',
-    opacity: 0,
-    pointerEvents: 'none',
-    transition: 'opacity 0.2s ease-in-out',
   },
   roleRow: {
     paddingTop: '8px',
@@ -75,10 +33,6 @@ const useStyles = makeStyles({
     position: 'sticky',
     top: '31px',
     zIndex: 1,
-  },
-  cellContent: {
-    display: 'flex',
-    alignItems: 'center',
   },
 });
 
@@ -107,8 +61,7 @@ export const UserTable: React.FC<UserTableProps> = ({
   onConfirmAction,
 }) => {
   const styles = useStyles();
-  // The spinner logic is now handled by the parent component (UserManagementPage)
-  // const showUsersSpinner = useDelayedLoading(isLoadingUsers, 300);
+  const commonStyles = useCommonStyles();
 
   const getUserPresence = useCallback(
     (user: UserApiResponse) => {
@@ -123,45 +76,73 @@ export const UserTable: React.FC<UserTableProps> = ({
     // Removed the outer Card and its footer from here.
     // The parent component (UserManagementPage) now wraps this content in its own Card.
     // This component now only renders the table content directly.
-    <Table size="small" aria-label="Lista de usuarios" className={styles.table}>
-      <TableHeader className={styles.tableHeaderSticky}>
+    <Table
+      size="small"
+      aria-label="Lista de usuarios"
+      className={mergeClasses(styles.tableOver, commonStyles.tableAuto)}
+    >
+      <TableHeader className={commonStyles.tableHeaderSticky}>
         <TableRow>
           <TableHeaderCell
-            className={styles.rowTitle}
+            className={mergeClasses(
+              commonStyles.tableHeaderSticky,
+              commonStyles.tableHeaderCell,
+              commonStyles.cellClickable,
+            )}
             sortDirection={sortState?.column === 'username' ? sortState.direction : undefined}
             onClick={() => toggleSort('username')}
           >
             {`\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0`}Usuario
           </TableHeaderCell>
           <TableHeaderCell
-            className={styles.rowTitle}
+            className={mergeClasses(
+              commonStyles.tableHeaderSticky,
+              commonStyles.tableHeaderCell,
+              commonStyles.cellClickable,
+            )}
             sortDirection={sortState?.column === 'realname' ? sortState.direction : undefined}
             onClick={() => toggleSort('realname')}
           >
             {`\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0`}Nombre
           </TableHeaderCell>
           <TableHeaderCell
-            className={styles.rowTitle}
+            className={mergeClasses(
+              commonStyles.tableHeaderSticky,
+              commonStyles.tableHeaderCell,
+              commonStyles.cellClickable,
+            )}
             sortDirection={sortState?.column === 'email' ? sortState.direction : undefined}
             onClick={() => toggleSort('email')}
           >
             {`\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0`}Email
           </TableHeaderCell>
           <TableHeaderCell
-            className={styles.rowTitle}
+            className={mergeClasses(
+              commonStyles.tableHeaderSticky,
+              commonStyles.tableHeaderCell,
+              commonStyles.cellClickable,
+            )}
             sortDirection={sortState?.column === 'isActive' ? sortState.direction : undefined}
             onClick={() => toggleSort('isActive')}
           >
             {`\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0`}Estado
           </TableHeaderCell>
           <TableHeaderCell
-            className={styles.rowTitle}
+            className={mergeClasses(
+              commonStyles.tableHeaderSticky,
+              commonStyles.tableHeaderCell,
+              commonStyles.cellClickable,
+            )}
             sortDirection={sortState?.column === 'lastLoginAt' ? sortState.direction : undefined}
             onClick={() => toggleSort('lastLoginAt')}
           >
             {`\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0`}Último Acceso
           </TableHeaderCell>
-          <TableHeaderCell className={styles.cellActions}>Acciones</TableHeaderCell>
+          <TableHeaderCell
+            className={mergeClasses(commonStyles.tableHeaderSticky, commonStyles.cellActions)}
+          >
+            Acciones
+          </TableHeaderCell>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -175,9 +156,13 @@ export const UserTable: React.FC<UserTableProps> = ({
               </TableCell>
             </TableRow>
             {usersInRole.map((user) => (
-              <TableRow key={user.id} className={styles.row} onDoubleClick={() => onEditUser(user)}>
+              <TableRow
+                key={user.id}
+                className={commonStyles.rowActions}
+                onDoubleClick={() => onEditUser(user)}
+              >
                 <TableCell>
-                  <div className={styles.cellContent}>
+                  <div className={commonStyles.cellContent}>
                     <Persona
                       name={user.username}
                       secondaryText={formatDateTime(user.createdAt)}
@@ -188,12 +173,12 @@ export const UserTable: React.FC<UserTableProps> = ({
                 </TableCell>
                 <TableCell>{user.realname}</TableCell>
                 <TableCell>{user.email}</TableCell>
-                <TableCell className={styles.cellCenter}>
+                <TableCell className={commonStyles.cellCenter}>
                   <Badge shape="rounded" color={user.isActive ? 'success' : 'danger'}>
                     {user.isActive ? 'Activo' : 'Inactivo'}
                   </Badge>
                 </TableCell>
-                <TableCell className={styles.cellCenter}>
+                <TableCell className={commonStyles.cellCenter}>
                   {user.lastLoginAt ? (
                     <DateToolTip text={user.lastLoginAt} />
                   ) : (
@@ -203,7 +188,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                   )}
                 </TableCell>
                 <TableCell>
-                  <div className={`${styles.actionButtons} action-buttons`}>
+                  <div className={`${commonStyles.actionButtons} action-buttons`}>
                     <Tooltip content="Editar" relationship="label">
                       <Button
                         icon={<Edit24Regular />}

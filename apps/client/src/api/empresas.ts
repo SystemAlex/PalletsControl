@@ -1,4 +1,4 @@
-import { ApiError, fetchJson } from '../utils/api';
+import { ApiError } from '../utils/api';
 import { EmpresaRecord, CreateEmpresaPayload, UpdateEmpresaPayload } from '../../../shared/types';
 
 export const fetchEmpresas = async (

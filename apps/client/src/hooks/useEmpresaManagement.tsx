@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToastController, Toast, ToastTitle, ToastBody } from '@fluentui/react-components';
 import { useAuth } from '../context/AuthContext';
@@ -6,10 +6,10 @@ import { fetchEmpresas, createEmpresa, updateEmpresa, deleteEmpresa } from '../a
 import { EmpresaRecord, CreateEmpresaPayload, UpdateEmpresaPayload } from '../../../shared/types';
 import { EmpresaFormData } from '../components/dialogs/EmpresaDialog';
 
-export type SortColumn = 'razonSocial' | 'cuit' | 'email' | 'activo' | 'fechaAlta';
+export type SortColumn = 'razonSocial' | 'cuit' | 'email' | 'activo' | 'fechaAlta' | 'lastPaymentDate' | 'nextPaymentDate' | 'isBlocked';
 type SortDirection = 'ascending' | 'descending';
 
-export function useEmpresaManagement() {
+export function useEmpresaManagement(onCloseEmpresaDialog: () => void) { // Accept onCloseEmpresaDialog
   const queryClient = useQueryClient();
   const { dispatchToast } = useToastController('app-toaster');
   const { handleApiError, user } = useAuth();
@@ -52,6 +52,7 @@ export function useEmpresaManagement() {
     onSuccess: () => {
       notify('Empresa creada exitosamente.', 'success');
       queryClient.invalidateQueries({ queryKey: ['empresas'] });
+      onCloseEmpresaDialog(); // Close the dialog on success
     },
   });
 
@@ -60,14 +61,20 @@ export function useEmpresaManagement() {
     ...mutationOptions,
     onSuccess: (data) => {
       // Check if the update was a status toggle
-      const isStatusToggle = data.message.includes('actualizada') && (data.empresa.activo === true || data.empresa.activo === false);
-      
+      const isStatusToggle =
+        data.message.includes('actualizada') &&
+        (data.empresa.activo === true || data.empresa.activo === false);
+
       if (isStatusToggle) {
-        notify(`Empresa ${data.empresa.activo ? 'reactivada' : 'desactivada'} exitosamente.`, 'success');
+        notify(
+          `Empresa ${data.empresa.activo ? 'reactivada' : 'desactivada'} exitosamente.`,
+          'success',
+        );
       } else {
         notify('Empresa actualizada.', 'success');
       }
       queryClient.invalidateQueries({ queryKey: ['empresas'] });
+      onCloseEmpresaDialog(); // Close the dialog on success
     },
   });
 
@@ -121,6 +128,17 @@ export function useEmpresaManagement() {
     email: (a, b) => (a.email || '').localeCompare(b.email || ''),
     activo: (a, b) => Number(a.activo) - Number(b.activo),
     fechaAlta: (a, b) => new Date(a.fechaAlta).getTime() - new Date(b.fechaAlta).getTime(),
+    lastPaymentDate: (a, b) => {
+      const dateA = a.lastPaymentDate ? new Date(a.lastPaymentDate).getTime() : -Infinity;
+      const dateB = b.lastPaymentDate ? new Date(b.lastPaymentDate).getTime() : -Infinity;
+      return dateA - dateB;
+    },
+    nextPaymentDate: (a, b) => {
+      const dateA = a.nextPaymentDate ? new Date(a.nextPaymentDate).getTime() : Infinity;
+      const dateB = b.nextPaymentDate ? new Date(b.nextPaymentDate).getTime() : Infinity;
+      return dateA - dateB;
+    },
+    isBlocked: (a, b) => Number(a.isBlocked) - Number(b.isBlocked),
   };
 
   const sortedEmpresas = useMemo(() => {
@@ -150,6 +168,7 @@ export function useEmpresaManagement() {
         sector: empresa.sector,
         logoUrl: empresa.logoUrl,
         activo: empresa.activo,
+        frecuenciaPago: empresa.frecuenciaPago, // NEW
       };
 
       if (empresa.idEmpresa) {

@@ -164,22 +164,22 @@ export const PalletTableRow: React.FC<PalletTableRowProps> = ({
             </TableCell>
 
             {/* BULTOS CELL (Column 2) */}
-            <TableCell className={styles.numericCell}>{product.bultos}</TableCell>
+            <TableCell className={commonStyles.cellCenter}>{product.bultos}</TableCell>
 
             {/* PALET CELL (Column 3) */}
-            <TableCell className={styles.checkboxCell}>
+            <TableCell className={commonStyles.cellCenter}>
               {product.pallets && <CheckmarkCircle16Filled color="#0e700e" />}
             </TableCell>
 
             {/* VENCIMIENTO CELL (Column 4) */}
-            <TableCell className={styles.numericCell}>
+            <TableCell className={commonStyles.cellCenter}>
               {product.vencimiento
                 ? format(product.vencimientoDate!, 'dd/MM/yyyy') + expirationStatusTxt
                 : ''}
             </TableCell>
 
             {/* OBS CELL (Column 5) */}
-            <TableCell className={styles.checkboxCell}>
+            <TableCell className={commonStyles.cellCenter}>
               {product.observaciones && (
                 <Tooltip content={product.observaciones} relationship="label">
                   <Info16Filled color="#73c2fb" />

@@ -94,4 +94,66 @@ export const useCommonStyles = makeStyles({
       color: `${tokens.colorNeutralForegroundDisabled} !important`,
     },
   },
+
+  // tables
+  tableAuto: {
+    tableLayout: 'auto',
+  },
+  tableHeaderSticky: {
+    position: 'sticky',
+    top: 0,
+    zIndex: 2,
+    backgroundColor: tokens.colorNeutralBackground1,
+  },
+  tableHeaderCell: {
+    textAlign: 'center',
+    fontWeight: '600',
+    backgroundColor: tokens.colorBrandBackground,
+    color: tokens.colorNeutralForegroundOnBrand,
+    '& > *': {
+      display: 'grid',
+      gridTemplateColumns: '1fr 12px',
+      width: 'calc(100%)',
+      whiteSpace: 'pre',
+    },
+    '&:has(span)': {
+      backgroundColor: tokens.colorBrandBackgroundSelected,
+    },
+    '&:hover': {
+      backgroundColor: tokens.colorBrandBackgroundHover,
+      color: tokens.colorNeutralForegroundOnBrand,
+    },
+    '&:active': {
+      backgroundColor: tokens.colorBrandBackgroundPressed,
+      color: tokens.colorNeutralForegroundOnBrand,
+    },
+  },
+  stickyHeaderCol: {
+    position: 'sticky',
+    left: '0px',
+    zIndex: 3,
+  },
+  cellActions: {
+    fontWeight: '600',
+    backgroundColor: tokens.colorBrandBackground,
+    color: tokens.colorNeutralForegroundOnBrand,
+    '& > *': { textAlign: 'center', justifyContent: 'center' },
+  },
+  cellClickable: { cursor: 'pointer' },
+  rowActions: { '&:hover .action-buttons': { opacity: 1, pointerEvents: 'auto' }, height: '52px' },
+  actionButtons: {
+    display: 'flex',
+    columnGap: '8px',
+    opacity: 0,
+    pointerEvents: 'none',
+    transition: 'opacity 0.2s ease-in-out',
+  },
+  cellCenter: {
+    textAlign: 'center',
+    '& > *': { textAlign: 'center', justifyContent: 'center' },
+  },
+  cellContent: {
+    display: 'flex',
+    alignItems: 'center',
+  },
 });

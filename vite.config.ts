@@ -42,6 +42,10 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
   },
   server: {
+    port: 5174,
+    hmr: {
+      port: 24679, // distinto al de AlquimiaWeb
+    },
     allowedHosts: ['palletsweb.serveo.net'],
   },
 });

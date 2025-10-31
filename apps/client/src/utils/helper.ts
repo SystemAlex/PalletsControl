@@ -1,6 +1,6 @@
 import { CalendarStrings } from '@fluentui/react-calendar-compat';
 import { defaultDatePickerStrings } from '@fluentui/react-datepicker-compat';
-import { format, isValid, Locale, formatDistanceToNowStrict } from 'date-fns';
+import { format, isValid, Locale, formatDistanceToNowStrict, isToday, isYesterday } from 'date-fns';
 import { es, enUS, ptBR } from 'date-fns/locale'; // Importa los locales necesarios
 
 // Mapeo de locales para date-fns
@@ -59,7 +59,10 @@ export function capitalize(text: string): string {
     .join(' ');
 }
 
-export function formatRelativeTime(dateString: string | null | undefined): string {
+export function formatRelativeTime(
+  dateString: string | null | undefined,
+  isDateOnly: boolean,
+): string {
   if (!dateString) {
     return 'Nunca';
   }
@@ -70,6 +73,14 @@ export function formatRelativeTime(dateString: string | null | undefined): strin
   }
 
   const locale = getLocale();
+  if (isDateOnly) {
+    if (isToday(date)) {
+      return 'Hoy';
+    }
+    if (isYesterday(date)) {
+      return 'Ayer';
+    }
+  }
   return formatDistanceToNowStrict(date, { addSuffix: true, locale });
 }
 

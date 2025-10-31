@@ -30,6 +30,11 @@ export const empresas = pgTable(
       .notNull()
       .default(sql`CURRENT_DATE`),
     activo: boolean('activo').notNull().default(true),
+    frecuenciaPago: text('frecuencia_pago', {
+      enum: ['mensual', 'anual', 'permanente'],
+    })
+      .notNull()
+      .default('mensual'), // NEW FIELD
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
   },

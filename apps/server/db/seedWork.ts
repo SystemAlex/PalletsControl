@@ -17,8 +17,10 @@ async function seed() {
   try {
     // 1. Limpiar datos existentes
     console.log('🗑️ Clearing old user data...');
+    await db.delete(schema.pagos); // Clear payments first
     await db.delete(schema.users);
     await db.execute(sql`ALTER SEQUENCE users_id_seq RESTART WITH 1;`);
+    await db.execute(sql`ALTER SEQUENCE pagos_id_pago_seq RESTART WITH 1;`); // Reset payment sequence
     console.log('✅ Old data cleared.');
 
     // 2. Seed Empresas (debe ir primero)
@@ -62,6 +64,17 @@ async function seed() {
     // 4. Insertar usuarios
     console.log('➕ Inserting new users...');
     await db.insert(schema.users).values(usersToInsert);
+    
+    // 5. Insertar pago base para Empresa 1 (Permanente)
+    console.log('💰 Inserting base payment for Empresa 1...');
+    await db.insert(schema.pagos).values({
+      idEmpresa: 1,
+      fechaPago: new Date().toISOString().split('T')[0], // Today's date
+      monto: '0.00',
+      metodo: 'Permanente',
+      observaciones: 'Pago inicial de la empresa base (Permanente).',
+    });
+
     console.log('🎉 Database seeded successfully!');
   } catch (error) {
     console.error('❌ Error seeding database:', error);

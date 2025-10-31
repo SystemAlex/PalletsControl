@@ -27,10 +27,7 @@ export const fetchActiveUsers = async (): Promise<ActiveUser[]> => {
 };
 
 export const createUser = async (
-  payload: Pick<
-    UserFormData,
-    'username' | 'realname' | 'email' | 'role' | 'isActive' | 'password'
-  >,
+  payload: Pick<UserFormData, 'username' | 'realname' | 'email' | 'role' | 'isActive' | 'password'>,
 ) => {
   const res = await fetch('/api/users', {
     method: 'POST',
@@ -46,10 +43,7 @@ export const createUser = async (
 
 export const updateUser = async (data: {
   id: number;
-  payload: Pick<
-    UserFormData,
-    'realname' | 'email' | 'role' | 'isActive'
-  >;
+  payload: Pick<UserFormData, 'realname' | 'email' | 'role' | 'isActive'>;
 }) => {
   const { id, payload } = data;
   const res = await fetch(`/api/users/${id}`, {

@@ -49,10 +49,18 @@ export const EmpresaManagementHeader: React.FC<EmpresaManagementHeaderProps> = (
       />
       {isMobile ? (
         <Tooltip relationship="label" content="Crear Empresa">
-          <Button appearance="primary" onClick={onCreateEmpresaClick} icon={<BuildingCheckmarkRegular />} />
+          <Button
+            appearance="primary"
+            onClick={onCreateEmpresaClick}
+            icon={<BuildingCheckmarkRegular />}
+          />
         </Tooltip>
       ) : (
-        <Button appearance="primary" onClick={onCreateEmpresaClick} icon={<BuildingCheckmarkRegular />}>
+        <Button
+          appearance="primary"
+          onClick={onCreateEmpresaClick}
+          icon={<BuildingCheckmarkRegular />}
+        >
           Crear Empresa
         </Button>
       )}

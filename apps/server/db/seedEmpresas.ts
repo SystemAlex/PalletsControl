@@ -32,6 +32,7 @@ export async function seedEmpresas() {
         email: 'contacto@demo.com',
         activo: true,
         logoUrl: '/logos/alquimia.png',
+        frecuenciaPago: 'permanente', // NEW: Set to permanente
       },
     ];
 

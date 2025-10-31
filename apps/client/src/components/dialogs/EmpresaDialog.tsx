@@ -1,15 +1,8 @@
 import React, { useEffect, FormEvent, useRef } from 'react';
-import {
-  Button,
-  Input,
-  Switch,
-  makeStyles,
-  Field,
-  mergeClasses,
-} from '@fluentui/react-components';
+import { Button, Input, Switch, makeStyles, Field, mergeClasses, Combobox, Option } from '@fluentui/react-components';
 import BaseDialog from '../ui/BaseDialog';
 import { useFormValidationEmpresa } from '../../hooks/useFormValidationEmpresa';
-import { useCommonStyles } from '../../theme/commonStyles';
+import { FrecuenciaPago } from '../../../../shared/types'; // Import FrecuenciaPago
 
 const useStyles = makeStyles({
   // Estilos específicos para el layout del formulario
@@ -60,6 +53,7 @@ export interface EmpresaFormData {
   sector: string | null;
   logoUrl: string | null;
   activo: boolean;
+  frecuenciaPago: FrecuenciaPago; // NEW
 }
 
 interface EmpresaDialogProps {
@@ -69,6 +63,8 @@ interface EmpresaDialogProps {
   isSubmitting: boolean;
   empresaToEdit?: EmpresaFormData | null;
 }
+
+const frecuenciaOptions: FrecuenciaPago[] = ['mensual', 'anual', 'permanente'];
 
 export default function EmpresaDialog({
   open,
@@ -94,6 +90,7 @@ export default function EmpresaDialog({
     sector: null,
     logoUrl: null,
     activo: true,
+    frecuenciaPago: 'mensual', // Default value
   };
 
   const {
@@ -126,6 +123,7 @@ export default function EmpresaDialog({
         sitioWeb: empresaToEdit.sitioWeb || '',
         sector: empresaToEdit.sector || '',
         logoUrl: empresaToEdit.logoUrl || '',
+        frecuenciaPago: empresaToEdit.frecuenciaPago || 'mensual', // Ensure default if missing
       });
     } else {
       reset();
@@ -150,7 +148,7 @@ export default function EmpresaDialog({
     if (!isValid) return;
 
     // Normalize empty strings back to null for API payload
-    const normalize = (value: string | null | undefined) => (value?.trim() || null);
+    const normalize = (value: string | null | undefined) => value?.trim() || null;
 
     const dataToSubmit: EmpresaFormData = {
       ...formData,
@@ -168,6 +166,8 @@ export default function EmpresaDialog({
       logoUrl: normalize(formData.logoUrl),
       // Asegurar que 'activo' no se cambie si es la empresa base
       activo: isBaseCompany ? true : formData.activo,
+      // Asegurar que 'frecuenciaPago' no se cambie si es la empresa base
+      frecuenciaPago: isBaseCompany ? 'permanente' : formData.frecuenciaPago,
     };
 
     onSubmit(dataToSubmit);
@@ -180,8 +180,16 @@ export default function EmpresaDialog({
   };
 
   // Helper function for input change handling
-  const handleInputChange = (name: keyof EmpresaFormData) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    handleChange(name, e.target.value);
+  const handleInputChange =
+    (name: keyof EmpresaFormData) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      handleChange(name, e.target.value);
+    };
+    
+  const handleFrecuenciaSelect = (_: unknown, data: { optionValue?: string }) => {
+    if (data.optionValue) {
+      handleChange('frecuenciaPago', data.optionValue as FrecuenciaPago);
+    }
   };
 
   return (
@@ -223,11 +231,7 @@ export default function EmpresaDialog({
             disabled={isBusy}
           />
         </Field>
-        <Field
-          label="Nombre Fantasía"
-          orientation="horizontal"
-          className={styles.field}
-        >
+        <Field label="Nombre Fantasía" orientation="horizontal" className={styles.field}>
           <Input
             value={formData.nombreFantasia || ''}
             onChange={handleInputChange('nombreFantasia')}
@@ -285,11 +289,7 @@ export default function EmpresaDialog({
             disabled={isBusy}
           />
         </Field>
-        <Field
-          label="Sitio Web"
-          orientation="horizontal"
-          className={styles.field}
-        >
+        <Field label="Sitio Web" orientation="horizontal" className={styles.field}>
           <Input
             value={formData.sitioWeb || ''}
             onChange={handleInputChange('sitioWeb')}
@@ -300,11 +300,7 @@ export default function EmpresaDialog({
         </Field>
 
         {/* Columna 2 */}
-        <Field
-          label="Dirección"
-          orientation="horizontal"
-          className={styles.field}
-        >
+        <Field label="Dirección" orientation="horizontal" className={styles.field}>
           <Input
             value={formData.direccion || ''}
             onChange={handleInputChange('direccion')}
@@ -313,11 +309,7 @@ export default function EmpresaDialog({
             disabled={isBusy}
           />
         </Field>
-        <Field
-          label="Ciudad"
-          orientation="horizontal"
-          className={styles.field}
-        >
+        <Field label="Ciudad" orientation="horizontal" className={styles.field}>
           <Input
             value={formData.ciudad || ''}
             onChange={handleInputChange('ciudad')}
@@ -326,11 +318,7 @@ export default function EmpresaDialog({
             disabled={isBusy}
           />
         </Field>
-        <Field
-          label="Provincia"
-          orientation="horizontal"
-          className={styles.field}
-        >
+        <Field label="Provincia" orientation="horizontal" className={styles.field}>
           <Input
             value={formData.provincia || ''}
             onChange={handleInputChange('provincia')}
@@ -339,11 +327,7 @@ export default function EmpresaDialog({
             disabled={isBusy}
           />
         </Field>
-        <Field
-          label="País"
-          orientation="horizontal"
-          className={styles.field}
-        >
+        <Field label="País" orientation="horizontal" className={styles.field}>
           <Input
             value={formData.pais || ''}
             onChange={handleInputChange('pais')}
@@ -352,11 +336,7 @@ export default function EmpresaDialog({
             disabled={isBusy}
           />
         </Field>
-        <Field
-          label="Sector"
-          orientation="horizontal"
-          className={styles.field}
-        >
+        <Field label="Sector" orientation="horizontal" className={styles.field}>
           <Input
             value={formData.sector || ''}
             onChange={handleInputChange('sector')}
@@ -365,11 +345,7 @@ export default function EmpresaDialog({
             disabled={isBusy}
           />
         </Field>
-        <Field
-          label="Logo URL"
-          orientation="horizontal"
-          className={styles.field}
-        >
+        <Field label="Logo URL" orientation="horizontal" className={styles.field}>
           <Input
             value={formData.logoUrl || ''}
             onChange={handleInputChange('logoUrl')}
@@ -379,12 +355,30 @@ export default function EmpresaDialog({
           />
         </Field>
 
-        {/* Fila completa para Activo */}
+        {/* Fila completa para Frecuencia y Activo */}
+        <Field
+          label="Frecuencia Pago"
+          orientation="horizontal"
+          className={styles.field}
+        >
+          <Combobox
+            value={formData.frecuenciaPago.charAt(0).toUpperCase() + formData.frecuenciaPago.slice(1)}
+            onOptionSelect={handleFrecuenciaSelect}
+            disabled={isBusy || isBaseCompany}
+          >
+            {frecuenciaOptions.map((f) => (
+              <Option key={f} value={f}>
+                {f.charAt(0).toUpperCase() + f.slice(1)}
+              </Option>
+            ))}
+          </Combobox>
+        </Field>
+
         {isEditing && (
           <Field
             label="Estado"
             orientation="horizontal"
-            className={mergeClasses(styles.switchField, styles.fullWidth)}
+            className={mergeClasses(styles.switchField)}
           >
             <Switch
               label={formData.activo ? 'Activo' : 'Inactivo'}

@@ -41,36 +41,8 @@ import { useCommonStyles } from '../../theme/commonStyles'; // Importar commonSt
 export type PalletProductTableStyles = ReturnType<typeof useStyles>;
 
 const useStyles = makeStyles({
-  table: {
-    tableLayout: 'auto',
+  tableWidth: {
     minWidth: '100%',
-  },
-  stickyHeaderCol: {
-    position: 'sticky',
-    left: '0px',
-    zIndex: 3,
-  },
-  tableHeaderCell: {
-    fontWeight: '600',
-    backgroundColor: tokens.colorBrandBackground,
-    color: tokens.colorNeutralForegroundOnBrand,
-    position: 'sticky',
-    top: '0px',
-    zIndex: 2,
-    textAlign: 'center',
-    '& *': {
-      display: 'grid',
-      gridTemplateColumns: '1fr 12px',
-    },
-    '&:has(span)': {
-      backgroundColor: tokens.colorBrandBackgroundSelected,
-    },
-    '&:hover': {
-      backgroundColor: tokens.colorBrandBackgroundHover,
-    },
-    '&:active': {
-      backgroundColor: tokens.colorBrandBackgroundPressed,
-    },
   },
   positionCell: {
     scrollMarginTop: '67px',
@@ -95,12 +67,6 @@ const useStyles = makeStyles({
   },
   productCell: {
     textAlign: 'left',
-  },
-  numericCell: {
-    textAlign: 'center',
-  },
-  checkboxCell: {
-    textAlign: 'center',
   },
   expiredDate: {
     fontWeight: tokens.fontWeightSemibold,
@@ -154,7 +120,7 @@ const useStyles = makeStyles({
     marginBottom: '4px',
     justifyContent: 'center',
   },
-  fileHeader: {
+  noBorderHeader: {
     borderBottom: 'none',
   },
   filaHeaderRow: {
@@ -271,14 +237,14 @@ export const PalletProductTable: React.FC<PalletProductTableProps> = ({
       columnId: 'bultos',
       compare: (a, b) => a.bultos - b.bultos,
       renderHeaderCell: () => 'BULTOS',
-      renderCell: (item) => <Text className={styles.numericCell}>{item.bultos}</Text>,
+      renderCell: (item) => <Text className={commonStyles.cellCenter}>{item.bultos}</Text>,
     }),
     createTableColumn<FlatPalletProductRow>({
       columnId: 'pallets',
       compare: (a, b) => Number(a.pallets) - Number(b.pallets),
       renderHeaderCell: () => 'PALET',
       renderCell: (item) => (
-        <div className={styles.checkboxCell}>
+        <div className={commonStyles.cellCenter}>
           {item.pallets && <CheckmarkCircle16Filled color="#0e700e" />}
         </div>
       ),
@@ -299,7 +265,7 @@ export const PalletProductTable: React.FC<PalletProductTableProps> = ({
         else if (status === 'warning') expirationStatusTxt = ' <5M';
 
         return (
-          <Text className={styles.numericCell}>
+          <Text className={commonStyles.cellCenter}>
             {item.vencimiento
               ? format(item.vencimientoDate!, 'dd/MM/yyyy') + expirationStatusTxt
               : ''}
@@ -312,7 +278,7 @@ export const PalletProductTable: React.FC<PalletProductTableProps> = ({
       compare: (a, b) => (a.observaciones || '').localeCompare(b.observaciones || ''),
       renderHeaderCell: () => 'OBS',
       renderCell: (item) => (
-        <div className={styles.checkboxCell}>
+        <div className={commonStyles.cellCenter}>
           {item.observaciones && (
             <Tooltip content={item.observaciones} relationship="label">
               <Info16Filled color="#73c2fb" />
@@ -379,15 +345,20 @@ export const PalletProductTable: React.FC<PalletProductTableProps> = ({
   }, [highlightedProductId, sortedRows, isMobile]);
 
   return (
-    <Table size="small" aria-label="Control Pallets" className={styles.table} sortable>
+    <Table
+      size="small"
+      aria-label="Control Pallets"
+      className={mergeClasses(styles.tableWidth, commonStyles.tableAuto)}
+      sortable
+    >
       <TableHeader>
-        <TableRow className={styles.fileHeader}>
+        <TableRow className={styles.noBorderHeader}>
           {columns.map((column, id) => (
             <TableHeaderCell
               key={column.columnId}
               className={mergeClasses(
-                styles.tableHeaderCell,
-                id === 0 ? styles.stickyHeaderCol : undefined,
+                commonStyles.tableHeaderCell,
+                id === 0 ? commonStyles.stickyHeaderCol : undefined,
               )}
               sortDirection={getSortDirection(column.columnId)}
               onClick={(e) => toggleColumnSort(e, column.columnId)}

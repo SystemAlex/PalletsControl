@@ -2474,9 +2474,9 @@ async function seedPalletProducts() {
 
 async function seed() {
   // Asegurar que la empresa base exista antes de intentar insertar posiciones y productos
-  await seedEmpresas(); 
+  await seedEmpresas();
   await seedPalletPositions();
-  await seedPalletProducts(); 
+  await seedPalletProducts();
   console.log('🎉 All pallet seeding complete!');
 }
 

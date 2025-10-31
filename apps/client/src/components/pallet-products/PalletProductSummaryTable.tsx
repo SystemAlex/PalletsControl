@@ -18,6 +18,7 @@ import {
 import { ProductSummaryItem } from '../../../../shared/types';
 import { SpinnerCustom } from '../ui/SpinnerCustom';
 import { ExpirationStatus } from './PalletTableUtils';
+import { useCommonStyles } from '../../theme/commonStyles';
 
 const useStyles = makeStyles({
   card: {
@@ -30,8 +31,7 @@ const useStyles = makeStyles({
     overflowX: 'auto',
     overflowY: 'auto',
   },
-  table: {
-    tableLayout: 'auto',
+  tableWidth: {
     minWidth: '600px',
   },
   tableRow: {
@@ -53,25 +53,11 @@ const useStyles = makeStyles({
     },
   },
   tableHeaderCell: {
-    fontWeight: '600',
-    backgroundColor: tokens.colorBrandBackground,
-    color: tokens.colorNeutralForegroundOnBrand,
-    position: 'sticky',
-    top: '0px',
-    zIndex: 1,
-    textAlign: 'center',
     paddingInline: '0px',
-    '&:has(span)': {
-      backgroundColor: tokens.colorBrandBackgroundSelected,
-    },
     '&:hover': {
-      backgroundColor: tokens.colorBrandBackgroundHover,
       '& > *': {
         opacity: 0.7,
       },
-    },
-    '&:active': {
-      backgroundColor: tokens.colorBrandBackgroundPressed,
     },
     '& > *': {
       display: 'grid',
@@ -90,15 +76,25 @@ const useStyles = makeStyles({
         opacity: 0.7,
       },
     },
-    '&:nth-child(4) > *': {
-      backgroundColor: tokens.colorStatusDangerBackground1,
-      color: tokens.colorStatusDangerForeground1,
-      opacity: 0.8,
+    '&:nth-child(4)': {
+      '& > *': {
+        backgroundColor: tokens.colorStatusDangerBackground1,
+        color: tokens.colorStatusDangerForeground1,
+        opacity: 0.8,
+      },
+      '&:has(span) > *': {
+        opacity: 0.7,
+      },
     },
-    '&:nth-child(5) > *': {
-      backgroundColor: tokens.colorPaletteBerryBackground1,
-      color: tokens.colorPaletteBerryForeground1,
-      opacity: 0.8,
+    '&:nth-child(5)': {
+      '& > *': {
+        backgroundColor: tokens.colorPaletteBerryBackground1,
+        color: tokens.colorPaletteBerryForeground1,
+        opacity: 0.8,
+      },
+      '&:has(span) > *': {
+        opacity: 0.7,
+      },
     },
   },
   productNameCell: {
@@ -191,6 +187,7 @@ export const PalletProductSummaryTable: React.FC<PalletProductSummaryTableProps>
   error,
 }) => {
   const styles = useStyles();
+  const commonStyles = useCommonStyles();
 
   // Define columns for the table
   const columns: TableColumnDefinition<ProductSummaryItem>[] = [
@@ -351,13 +348,19 @@ export const PalletProductSummaryTable: React.FC<PalletProductSummaryTableProps>
   );
 
   return (
-    <Table size="small" aria-label="Resumen de Pallets por Producto" className={styles.table} sortable>
+    <Table
+      size="small"
+      aria-label="Resumen de Pallets por Producto"
+      className={mergeClasses(styles.tableWidth, commonStyles.tableAuto)}
+      sortable
+    >
       <TableHeader>
         <TableRow>
           {columns.map((column, id) => (
             <TableHeaderCell
               key={column.columnId}
               className={mergeClasses(
+                commonStyles.tableHeaderCell,
                 styles.tableHeaderCell,
                 id === 0 ? styles.stickyHeaderCol : '',
               )}
