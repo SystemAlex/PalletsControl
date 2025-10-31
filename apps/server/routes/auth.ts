@@ -301,7 +301,6 @@ router.get('/me', verifyToken, renewToken, async (req: AuthRequest, res) => {
 
   const expiresAt = (decoded as { exp: number }).exp * 1000;
 
-  // Explicitly include canViewOthers from req.user
   res.json({
     id: req.user?.id,
     username: req.user?.username,

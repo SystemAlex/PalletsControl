@@ -4,6 +4,7 @@ import * as schema from './schema';
 import bcrypt from 'bcryptjs';
 import { sql } from 'drizzle-orm';
 import { env } from '../lib/config';
+import { seedEmpresas } from './seedEmpresas'; // Importar seedEmpresas
 
 const pool = new Pool({
   connectionString: env.DATABASE_URL,
@@ -20,7 +21,10 @@ async function seed() {
     await db.execute(sql`ALTER SEQUENCE users_id_seq RESTART WITH 1;`);
     console.log('✅ Old data cleared.');
 
-    // 2. Preparar nuevos usuarios
+    // 2. Seed Empresas (debe ir primero)
+    await seedEmpresas();
+
+    // 3. Preparar nuevos usuarios
     console.log('👤 Preparing new users...');
     const usersToInsert: (typeof schema.users.$inferInsert)[] = [
       {
@@ -55,10 +59,10 @@ async function seed() {
       },
     ];
 
-    // 3. Insertar usuarios
+    // 4. Insertar usuarios
     console.log('➕ Inserting new users...');
     await db.insert(schema.users).values(usersToInsert);
-    console.log('✅ Database seeded successfully!');
+    console.log('🎉 Database seeded successfully!');
   } catch (error) {
     console.error('❌ Error seeding database:', error);
     process.exit(1);

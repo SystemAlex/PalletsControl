@@ -1,9 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { makeStyles, Card, Text, CardFooter, Button } from '@fluentui/react-components';
+import {
+  makeStyles,
+  Card,
+  Text,
+  CardFooter,
+  Button,
+  mergeClasses,
+} from '@fluentui/react-components';
 import { useMainLayoutContext } from '../layouts/MainLayout';
 import UserDialog, { UserFormData } from '../components/dialogs/UserDialog';
 import ConfirmationDialog from '../components/dialogs/ConfirmationDialog';
-// Removed ActiveUsersList and LoginHistoryList imports
+import ActiveUsersList from '../components/ActiveUsersList';
+import LoginHistoryList from '../components/LoginHistoryList';
 import { UserApiResponse } from '../../../shared/types';
 import { useUserManagement } from '../hooks/useUserManagement';
 import { UserTable } from '../components/user-management/UserTable';
@@ -14,11 +22,32 @@ import { SpinnerCustom } from '../components/ui/SpinnerCustom'; // Import Spinne
 const useStyles = makeStyles({
   root: {
     display: 'grid',
-    gridTemplateColumns: '1fr', // Simplified grid layout
+    gridTemplateColumns: '1fr auto',
+    gridTemplateRows: 'auto auto',
     gap: '8px',
     height: '100%',
+    '@media(max-width: 600px)': {
+      gridTemplateColumns: 'auto',
+      gridTemplateRows: 'auto auto auto',
+    },
+    '@media(min-width: 601px) and (max-width: 768px)': {
+      gridTemplateColumns: 'auto 1fr',
+    },
   },
-  card: { width: '100%', padding: '0px', gap: '0px', height: '100%' },
+  card: { width: '100%', padding: '0px', gap: '0px', height: '100%' }, // Restaurado aquí
+  card1: {
+    gridRow: 'span 2 / span 2',
+    '@media(max-width: 600px)': {
+      gridRow: 'auto',
+      gridColumn: 'auto',
+    },
+    '@media(min-width: 601px) and (max-width: 768px)': {
+      gridRow: 'auto',
+      gridColumn: 'span 2 / span 2',
+    },
+  },
+  // Los estilos específicos de la tabla (table, footer, tableContainer, etc.)
+  // se mantienen en apps/client/src/components/user-management/UserTable.tsx
   tableContainer: { maxHeight: 'calc(100vh - 140px)', overflowY: 'auto', height: '100%' },
   footer: {
     display: 'flex',
@@ -51,7 +80,7 @@ export default function UserManagementPage() {
     updateUserIsPending,
     toggleStatusMutation,
     resetPasswordMutation,
-    // Removed handleApiError as it's not used directly here anymore
+    handleApiError,
   } = useUserManagement();
 
   const [isUserDialogOpen, setUserDialogOpen] = useState(false);
@@ -83,8 +112,6 @@ export default function UserManagementPage() {
       role: user.role,
       isActive: user.isActive,
       password: '', // Password is not fetched for security reasons
-      canViewOthers: false, // Removed field, set to default
-      id_personal: null, // Removed field, set to default
     });
     setUserDialogOpen(true);
   }, []);
@@ -120,8 +147,8 @@ export default function UserManagementPage() {
 
   return (
     <div className={styles.root}>
-      {/* Main Table - wrapped in Card with styles.card */}
-      <Card className={styles.card}>
+      {/* Main Table - wrapped in Card with styles.card and styles.card1 */}
+      <Card className={mergeClasses(styles.card, styles.card1)}>
         {isLoadingUsers ? (
           <SpinnerCustom text="Cargando usuarios" />
         ) : usersError ? (
@@ -129,12 +156,13 @@ export default function UserManagementPage() {
         ) : (
           <>
             <div className={styles.tableContainer}>
+              {/* This div is now just for max-height and overflow */}
               <UserTable
                 users={users}
                 totalCount={totalCount}
                 totalPages={totalPages}
                 activeUsernames={activeUsernames}
-                isLoadingUsers={isLoadingUsers}
+                isLoadingUsers={isLoadingUsers} // Pass isLoadingUsers to UserTable if it needs to show its own spinner
                 isFetchingUsers={isFetchingUsers}
                 usersError={usersError}
                 page={page}
@@ -160,7 +188,15 @@ export default function UserManagementPage() {
         )}
       </Card>
 
-      {/* Removed ActiveUsersList and LoginHistoryList */}
+      {/* Active Users List - direct child of root */}
+      <ActiveUsersList handleApiError={handleApiError} />
+
+      {/* Login History List - direct child of root */}
+      <LoginHistoryList
+        activeUsernames={activeUsernames}
+        handleApiError={handleApiError}
+        searchQuery={searchQuery}
+      />
 
       <UserDialog
         open={isUserDialogOpen}

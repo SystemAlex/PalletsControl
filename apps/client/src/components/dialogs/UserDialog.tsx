@@ -12,7 +12,7 @@ import { useAuth } from '../../context/AuthContext';
 import { UserRole, allAvailableRoles, canAssignRole } from '../../../../shared/types';
 import { capitalize } from '../../utils/helper';
 import BaseDialog from '../ui/BaseDialog';
-import { useFormValidation } from '../../hooks/useFormValidation';
+import { useFormValidationUser } from '../../hooks/useFormValidationUser';
 import { useCommonStyles } from '../../theme/commonStyles'; // Importar estilos comunes
 
 const useStyles = makeStyles({
@@ -28,8 +28,6 @@ export interface UserFormData {
   role: string;
   isActive: boolean;
   password: string;
-  canViewOthers: boolean; // Kept for useFormValidation compatibility, but logic removed
-  id_personal: number | null; // Kept for useFormValidation compatibility, but logic removed
 }
 
 interface UserDialogProps {
@@ -59,8 +57,6 @@ export default function UserDialog({
     role: 'deposito',
     isActive: true,
     password: 'Clave123',
-    canViewOthers: false,
-    id_personal: null,
   };
 
   const {
@@ -72,7 +68,7 @@ export default function UserDialog({
     handleBlur,
     showError,
     reset,
-  } = useFormValidation(initialValues);
+  } = useFormValidationUser(initialValues);
 
   const isEditing = !!userToEdit;
   const isBusy = isSubmitting;
@@ -81,8 +77,6 @@ export default function UserDialog({
     if (!currentUser) return [];
     return allAvailableRoles.filter((role) => canAssignRole(currentUser.role as UserRole, role));
   }, [currentUser]);
-
-  // Removed showPersonnelSelect and showCanViewOthersSwitch logic
 
   useEffect(() => {
     if (userToEdit) {
@@ -233,8 +227,6 @@ export default function UserDialog({
             />
           )}
         </Field>
-        {/* Removed Personnel Select Field */}
-        {/* Removed CanViewOthers Switch Field */}
       </>
     </BaseDialog>
   );

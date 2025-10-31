@@ -4,6 +4,7 @@ import * as schema from './schema';
 import bcrypt from 'bcryptjs';
 import { sql } from 'drizzle-orm';
 import { env } from '../lib/config';
+import { seedEmpresas } from './seedEmpresas'; // Importar seedEmpresas
 
 const pool = new Pool({
   connectionString: env.DATABASE_URL,
@@ -14,13 +15,16 @@ const db = drizzle(pool, { schema });
 async function seed() {
   console.log('⏳ Seeding database...');
   try {
-    // 1. Limpiar datos existentes
+    // 1. Limpiar datos de usuarios existentes y reiniciar secuencia
     console.log('🗑️ Clearing old user data...');
     await db.delete(schema.users);
     await db.execute(sql`ALTER SEQUENCE users_id_seq RESTART WITH 1;`);
-    console.log('✅ Old data cleared.');
+    console.log('✅ Old user data cleared.');
 
-    // 2. Preparar nuevos usuarios
+    // 2. Seed Empresas (debe ir primero)
+    await seedEmpresas();
+
+    // 3. Preparar nuevos usuarios
     console.log('👤 Preparing new users...');
     const usersToInsert: (typeof schema.users.$inferInsert)[] = [
       {
@@ -31,7 +35,7 @@ async function seed() {
         role: 'admin',
         mustChangePassword: false,
         isActive: true,
-        idEmpresa: 1, // CAMBIO: Asignado a Empresa 1
+        idEmpresa: 1, // Asignado a Empresa 1
       },
       {
         username: 'Programador',
@@ -41,7 +45,7 @@ async function seed() {
         role: 'developer',
         mustChangePassword: false,
         isActive: true,
-        idEmpresa: 1, // CAMBIO: Asignado a Empresa 1
+        idEmpresa: 1, // Asignado a Empresa 1
       },
       {
         username: 'DemoUser',
@@ -65,10 +69,10 @@ async function seed() {
       },
     ];
 
-    // 3. Insertar usuarios
+    // 4. Insertar usuarios
     console.log('➕ Inserting new users...');
     await db.insert(schema.users).values(usersToInsert);
-    console.log('✅ Database seeded successfully!');
+    console.log('🎉 Database seeded successfully!');
   } catch (error) {
     console.error('❌ Error seeding database:', error);
     process.exit(1);

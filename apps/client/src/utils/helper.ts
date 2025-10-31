@@ -1,6 +1,6 @@
 import { CalendarStrings } from '@fluentui/react-calendar-compat';
 import { defaultDatePickerStrings } from '@fluentui/react-datepicker-compat';
-import { format, isValid, Locale, formatDistanceToNow } from 'date-fns';
+import { format, isValid, Locale, formatDistanceToNowStrict } from 'date-fns';
 import { es, enUS, ptBR } from 'date-fns/locale'; // Importa los locales necesarios
 
 // Mapeo de locales para date-fns
@@ -70,7 +70,7 @@ export function formatRelativeTime(dateString: string | null | undefined): strin
   }
 
   const locale = getLocale();
-  return formatDistanceToNow(date, { addSuffix: true, locale });
+  return formatDistanceToNowStrict(date, { addSuffix: true, locale });
 }
 
 export function formatDateTime(dateString: string | Date | null | undefined): string {

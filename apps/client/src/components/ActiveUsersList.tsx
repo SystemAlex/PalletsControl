@@ -76,7 +76,7 @@ export default function ActiveUsersList({ handleApiError }: ActiveUsersListProps
   const styles = useStyles();
   const { user: currentUser } = useAuth();
 
-  const allowedRolesForActiveUsers = ['admin', 'developer'];
+  const allowedRolesForActiveUsers = ['admin', 'gerente', 'developer', 'supervisor', 'analista'];
   const canViewActiveUsers = !!currentUser && allowedRolesForActiveUsers.includes(currentUser.role);
 
   const {

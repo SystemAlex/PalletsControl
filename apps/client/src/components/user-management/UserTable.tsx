@@ -22,22 +22,46 @@ import { DateToolTip } from '../ui/DateToolTip';
 import { SortColumn } from '../../hooks/useUserManagement'; // Import SortColumn
 
 const useStyles = makeStyles({
-  card: { width: '100%', padding: '0px', gap: '0px', height: '100%' }, // This card is for the internal structure of UserTable
   table: {
     tableLayout: 'auto',
     overflowY: 'auto',
   },
-  // Removed footer and tableContainer from here as they are now managed by the parent Card in UserManagementPage.tsx
-  // The parent component (UserManagementPage) now handles the Card and its footer/container.
-  // This component's Card will simply ensure its content fills the space given by the parent.
-  tableHeaderSticky: {
-    position: 'sticky',
-    top: 0,
-    zIndex: 2,
-    backgroundColor: tokens.colorNeutralBackground1,
-  },
+  tableHeaderSticky: {},
   row: { '&:hover .action-buttons': { opacity: 1, pointerEvents: 'auto' }, height: '52px' },
-  rowTitle: { fontWeight: 'bolder', fontSize: tokens.fontSizeBase400, whiteSpace: 'nowrap' },
+  rowTitle: {
+    fontWeight: '600',
+    backgroundColor: tokens.colorBrandBackground,
+    color: tokens.colorNeutralForegroundOnBrand,
+    position: 'sticky',
+    top: '0px',
+    zIndex: 1,
+    textAlign: 'center',
+    '&:has(span)': {
+      backgroundColor: tokens.colorBrandBackgroundSelected,
+    },
+    '&:hover': {
+      backgroundColor: tokens.colorBrandBackgroundHover,
+    },
+    '&:active': {
+      backgroundColor: tokens.colorBrandBackgroundPressed,
+    },
+    '& > *': {
+      display: 'grid',
+      gridTemplateColumns: '1fr 12px',
+      width: 'calc(100%)',
+      whiteSpace: 'pre',
+    },
+  },
+  cellCenter: {
+    textAlign: 'center',
+    '& > *': { textAlign: 'center', justifyContent: 'center' },
+  },
+  cellActions: {
+    fontWeight: '600',
+    backgroundColor: tokens.colorBrandBackground,
+    color: tokens.colorNeutralForegroundOnBrand,
+    '& > *': { textAlign: 'center', justifyContent: 'center' },
+  },
   actionButtons: {
     display: 'flex',
     columnGap: '8px',
@@ -107,50 +131,44 @@ export const UserTable: React.FC<UserTableProps> = ({
             sortDirection={sortState?.column === 'username' ? sortState.direction : undefined}
             onClick={() => toggleSort('username')}
           >
-            Usuario
+            {`\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0`}Usuario
           </TableHeaderCell>
           <TableHeaderCell
             className={styles.rowTitle}
             sortDirection={sortState?.column === 'realname' ? sortState.direction : undefined}
             onClick={() => toggleSort('realname')}
           >
-            Nombre
+            {`\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0`}Nombre
           </TableHeaderCell>
           <TableHeaderCell
             className={styles.rowTitle}
             sortDirection={sortState?.column === 'email' ? sortState.direction : undefined}
             onClick={() => toggleSort('email')}
           >
-            Email
-          </TableHeaderCell>
-          <TableHeaderCell
-            className={styles.rowTitle}
-            // Removed sort for 'des_personal'
-          >
-            Rol
+            {`\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0`}Email
           </TableHeaderCell>
           <TableHeaderCell
             className={styles.rowTitle}
             sortDirection={sortState?.column === 'isActive' ? sortState.direction : undefined}
             onClick={() => toggleSort('isActive')}
           >
-            Estado
+            {`\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0`}Estado
           </TableHeaderCell>
           <TableHeaderCell
             className={styles.rowTitle}
             sortDirection={sortState?.column === 'lastLoginAt' ? sortState.direction : undefined}
             onClick={() => toggleSort('lastLoginAt')}
           >
-            Último Acceso
+            {`\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0`}Último Acceso
           </TableHeaderCell>
-          <TableHeaderCell className={styles.rowTitle}>Acciones</TableHeaderCell>
+          <TableHeaderCell className={styles.cellActions}>Acciones</TableHeaderCell>
         </TableRow>
       </TableHeader>
       <TableBody>
         {users.map(({ role, users: usersInRole }) => (
           <React.Fragment key={role}>
             <TableRow className={styles.roleRow}>
-              <TableCell colSpan={7}>
+              <TableCell colSpan={6}>
                 <Title3>
                   {capitalize(role)} ({usersInRole.length})
                 </Title3>
@@ -170,17 +188,12 @@ export const UserTable: React.FC<UserTableProps> = ({
                 </TableCell>
                 <TableCell>{user.realname}</TableCell>
                 <TableCell>{user.email}</TableCell>
-                <TableCell>
-                  <Badge shape="rounded" color="brand">
-                    {capitalize(user.role)}
-                  </Badge>
-                </TableCell>
-                <TableCell>
+                <TableCell className={styles.cellCenter}>
                   <Badge shape="rounded" color={user.isActive ? 'success' : 'danger'}>
                     {user.isActive ? 'Activo' : 'Inactivo'}
                   </Badge>
                 </TableCell>
-                <TableCell>
+                <TableCell className={styles.cellCenter}>
                   {user.lastLoginAt ? (
                     <DateToolTip text={user.lastLoginAt} />
                   ) : (

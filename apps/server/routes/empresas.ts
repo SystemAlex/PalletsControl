@@ -31,6 +31,7 @@ const createEmpresaSchema = z.object({
   email: z.string().email('Email inválido').min(1, 'Email es obligatorio'), // Requerido
   sitioWeb: z.string().nullable().optional(),
   sector: z.string().nullable().optional(),
+  logoUrl: z.string().nullable().optional(), // Nuevo campo
   activo: z.boolean().optional(),
 });
 
@@ -46,6 +47,7 @@ const updateEmpresaSchema = z.object({
   email: z.string().email('Email inválido').min(1, 'Email es obligatorio').optional(), // Requerido (si se proporciona)
   sitioWeb: z.string().nullable().optional(),
   sector: z.string().nullable().optional(),
+  logoUrl: z.string().nullable().optional(), // Nuevo campo
   activo: z.boolean().optional(),
 });
 
@@ -119,7 +121,7 @@ router.put('/:id', verifyToken, renewToken, checkAdminRole, async (req: AuthRequ
   }
 });
 
-// DELETE: Eliminar empresa por ID
+// DELETE: Eliminar (Desactivar Lógicamente) empresa por ID
 router.delete(
   '/:id',
   verifyToken,
@@ -131,8 +133,12 @@ router.delete(
       if (isNaN(idEmpresa)) {
         throw new BadRequestError('ID de empresa inválido.');
       }
-      const deletedEmpresa = await empresaService.deleteEmpresa(idEmpresa);
-      res.json({ message: 'Empresa eliminada exitosamente', empresa: deletedEmpresa });
+      const deactivatedEmpresa = await empresaService.deleteEmpresa(idEmpresa);
+      // Respuesta 200 OK ya que es una actualización de estado (borrado lógico)
+      res.status(200).json({
+        message: 'Empresa desactivada exitosamente (Borrado Lógico)',
+        empresa: deactivatedEmpresa,
+      });
     } catch (error) {
       next(error);
     }

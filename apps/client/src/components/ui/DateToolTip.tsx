@@ -1,6 +1,7 @@
 import React from 'react';
 import { makeStyles, Text, Tooltip } from '@fluentui/react-components';
 import { formatDateTime, formatRelativeTime } from '../../utils/helper';
+import { format } from 'date-fns';
 
 const useStyles = makeStyles({
   full: {
@@ -15,8 +16,12 @@ const useStyles = makeStyles({
   },
 });
 
-export const DateToolTip = ({ text }: { text: string }) => {
-  const toolTipDateTime = formatDateTime(text);
+export const DateToolTip = ({ text, isDateOnly }: { text: string; isDateOnly?: boolean }) => {
+  let toolTipDateTime = formatDateTime(text);
+  if (isDateOnly) {
+    toolTipDateTime = format(new Date(text), 'dd/MM/yyyy');
+    text = text + 'T00:00:00';
+  }
   const textDateTime = formatRelativeTime(text);
   const onlyText = toolTipDateTime === textDateTime;
   const [ref, setRef] = React.useState<HTMLElement | null>();

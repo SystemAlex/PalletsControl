@@ -3,6 +3,7 @@ import { Pool } from 'pg';
 import { palletsPosiciones, palletsProductos } from './schema'; // Importar palletsProductos
 import { sql } from 'drizzle-orm';
 import { env } from '../lib/config';
+import { seedEmpresas } from './seedEmpresas'; // Importar seedEmpresas
 
 const pool = new Pool({
   connectionString: env.DATABASE_URL,
@@ -15,6 +16,8 @@ async function seedPalletPositions() {
   try {
     // 1. Limpiar datos existentes
     console.log('🗑️ Clearing old pallet positions data...');
+    await db.delete(palletsProductos); // Limpiar productos primero por FK
+    await db.execute(sql`ALTER SEQUENCE pallets_productos_id_seq RESTART WITH 1;`);
     await db.delete(palletsPosiciones);
     await db.execute(sql`ALTER SEQUENCE pallets_posiciones_id_seq RESTART WITH 1;`);
     console.log('✅ Old pallet positions data cleared.');
@@ -301,13 +304,7 @@ async function seedPalletPositions() {
 async function seedPalletProducts() {
   console.log('⏳ Seeding pallet products...');
   try {
-    // 1. Limpiar datos existentes
-    console.log('🗑️ Clearing old pallet products data...');
-    await db.delete(palletsProductos);
-    await db.execute(sql`ALTER SEQUENCE pallets_productos_id_seq RESTART WITH 1;`);
-    console.log('✅ Old pallet products data cleared.');
-
-    // 2. Preparar nuevos productos de pallet
+    // 1. Preparar nuevos productos de pallet
     console.log('📦 Preparing new pallet products...');
 
     const productsToInsert: (typeof palletsProductos.$inferInsert)[] = [
@@ -2461,7 +2458,7 @@ async function seedPalletProducts() {
       },
     ];
 
-    // 3. Insertar productos de pallet
+    // 4. Insertar productos de pallet
     console.log(`➕ Inserting ${productsToInsert.length} new pallet products...`);
     await db.insert(palletsProductos).values(productsToInsert);
     // Después de insertar IDs explícitos, actualiza la secuencia al MAX(id) + 1
@@ -2476,8 +2473,10 @@ async function seedPalletProducts() {
 }
 
 async function seed() {
+  // Asegurar que la empresa base exista antes de intentar insertar posiciones y productos
+  await seedEmpresas(); 
   await seedPalletPositions();
-  await seedPalletProducts(); // Llamar a la nueva función de sembrado
+  await seedPalletProducts(); 
   console.log('🎉 All pallet seeding complete!');
 }
 

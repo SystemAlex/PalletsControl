@@ -1,7 +1,7 @@
 import { db } from '../db';
 import { empresas } from '../db/schema';
 import { CreateEmpresaPayload, UpdateEmpresaPayload, EmpresaRecord } from '../../shared/types';
-import { BadRequestError, ConflictError, NotFoundError } from '../lib/errors';
+import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from '../lib/errors';
 import { eq, ilike, or, sql, and } from 'drizzle-orm';
 
 // Helper para seleccionar columnas y formatear la fecha
@@ -18,6 +18,7 @@ const selectEmpresaColumns = {
   email: empresas.email,
   sitioWeb: empresas.sitioWeb,
   sector: empresas.sector,
+  logoUrl: empresas.logoUrl, // Incluir logoUrl
   fechaAlta: sql<string>`${empresas.fechaAlta}::text`.as('fechaAlta'),
   activo: empresas.activo,
 };
@@ -57,6 +58,7 @@ export async function createEmpresa(payload: CreateEmpresaPayload): Promise<Empr
       email: payload.email,
       sitioWeb: payload.sitioWeb,
       sector: payload.sector,
+      logoUrl: payload.logoUrl, // Incluir logoUrl
       activo: payload.activo,
     })
     .returning(selectEmpresaColumns);
@@ -123,6 +125,11 @@ export async function updateEmpresa(
     throw new BadRequestError('No hay datos para actualizar.');
   }
 
+  // Restricción: La empresa ID 1 no puede ser desactivada
+  if (idEmpresa === 1 && payload.activo === false) {
+    throw new UnauthorizedError('La empresa base (ID 1) no puede ser desactivada.');
+  }
+
   // Verificar unicidad de CUIT si se está actualizando
   if (payload.cuit) {
     const existingCuit = await db.query.empresas.findFirst({
@@ -144,7 +151,6 @@ export async function updateEmpresa(
   }
 
   // Crear un objeto de actualización que solo contenga las propiedades definidas en payload
-  // y añadir updatedAt. Esto evita pasar 'null' a campos NOT NULL si no se especifican.
   const updateData: Record<string, unknown> = {
     ...payload,
     updatedAt: new Date(),
@@ -163,15 +169,25 @@ export async function updateEmpresa(
   return updatedEmpresa;
 }
 
+/**
+ * Realiza un borrado lógico de una empresa (establece activo=false).
+ * @param idEmpresa ID de la empresa a desactivar.
+ * @returns El registro de la empresa desactivada.
+ */
 export async function deleteEmpresa(idEmpresa: number): Promise<EmpresaRecord> {
-  const [deletedEmpresa] = await db
-    .delete(empresas)
+  if (idEmpresa === 1) {
+    throw new UnauthorizedError('La empresa base (ID 1) no puede ser eliminada ni desactivada.');
+  }
+
+  const [updatedEmpresa] = await db
+    .update(empresas)
+    .set({ activo: false, updatedAt: new Date() })
     .where(eq(empresas.idEmpresa, idEmpresa))
     .returning(selectEmpresaColumns);
 
-  if (!deletedEmpresa) {
-    throw new NotFoundError('Empresa no encontrada.');
+  if (!updatedEmpresa) {
+    throw new NotFoundError('Empresa no encontrada o no se pudo desactivar.');
   }
 
-  return deletedEmpresa;
+  return updatedEmpresa;
 }

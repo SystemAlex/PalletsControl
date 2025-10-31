@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { UserFormData } from '../components/dialogs/UserDialog';
 
-export function useFormValidation(initialValues: UserFormData) {
+export function useFormValidationUser(initialValues: UserFormData) {
   const [formData, setFormData] = useState<UserFormData>(initialValues);
   const [touched, setTouched] = useState<{ [K in keyof UserFormData]?: boolean }>({});
   const [submitAttempted, setSubmitAttempted] = useState(false);

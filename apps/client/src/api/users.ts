@@ -30,7 +30,6 @@ export const createUser = async (
   payload: Pick<
     UserFormData,
     'username' | 'realname' | 'email' | 'role' | 'isActive' | 'password'
-    // Removed 'canViewOthers' and 'id_personal'
   >,
 ) => {
   const res = await fetch('/api/users', {
@@ -50,7 +49,6 @@ export const updateUser = async (data: {
   payload: Pick<
     UserFormData,
     'realname' | 'email' | 'role' | 'isActive'
-    // Removed 'canViewOthers' and 'id_personal'
   >;
 }) => {
   const { id, payload } = data;

@@ -6,6 +6,7 @@ import { SpinnerCustom } from './src/components/ui/SpinnerCustom';
 
 const UserManagementPage = lazy(() => import('./src/pages/UserManagementPage'));
 const PalletProductsPage = lazy(() => import('./src/pages/PalletProductsPage'));
+const EmpresaManagementPage = lazy(() => import('./src/pages/EmpresaManagementPage'));
 
 function App() {
   return (
@@ -30,6 +31,14 @@ function App() {
               element={
                 <Suspense fallback={<SpinnerCustom text="Cargando Control Pallets" />}>
                   <PalletProductsPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/empresas"
+              element={
+                <Suspense fallback={<SpinnerCustom text="Cargando Gestión de Empresas" />}>
+                  <EmpresaManagementPage />
                 </Suspense>
               }
             />

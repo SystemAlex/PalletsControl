@@ -14,7 +14,7 @@ import {
 import { UserApiResponse, ActiveUser, UserRole } from '../../../shared/types';
 import { UserFormData } from '../components/dialogs/UserDialog'; // Assuming this import path is correct
 
-export type SortColumn = 'username' | 'realname' | 'email' | 'isActive' | 'lastLoginAt'; // Removed 'des_personal'
+export type SortColumn = 'username' | 'realname' | 'email' | 'isActive' | 'lastLoginAt';
 type SortDirection = 'ascending' | 'descending';
 
 export function useUserManagement() {
@@ -182,7 +182,6 @@ export function useUserManagement() {
             email,
             role,
             isActive: isActive ?? false,
-            // Removed canViewOthers and id_personal
           },
         });
       } else {
@@ -194,7 +193,6 @@ export function useUserManagement() {
           role,
           isActive: true,
           password: user.password || 'Clave123',
-          // Removed canViewOthers and id_personal
         });
       }
     },

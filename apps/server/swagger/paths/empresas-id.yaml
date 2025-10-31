@@ -99,7 +99,7 @@ put:
           schema:
             $ref: '../schemas/ErrorResponse.yaml'
 delete:
-  summary: Eliminar una empresa por ID
+  summary: Desactivar (Borrado Lógico) una empresa por ID
   tags:
     - Empresas
   security:
@@ -110,10 +110,10 @@ delete:
       schema:
         type: integer
       required: true
-      description: ID de la empresa a eliminar
+      description: ID de la empresa a desactivar
   responses:
     '200':
-      description: Empresa eliminada exitosamente
+      description: Empresa desactivada exitosamente
       content:
         application/json:
           schema:
@@ -121,11 +121,11 @@ delete:
             properties:
               message:
                 type: string
-                example: Empresa eliminada exitosamente
+                example: Empresa desactivada exitosamente (Borrado Lógico)
               empresa:
                 $ref: '../schemas/EmpresaRecord.yaml'
     '401':
-      description: No autorizado / Usuario sin rol de administrador
+      description: No autorizado / Usuario sin rol de administrador o intentando desactivar ID 1
       content:
         application/json:
           schema:

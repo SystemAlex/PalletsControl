@@ -21,6 +21,8 @@ import {
   BoxMultiple24Filled,
   BoxMultipleCheckmark24Regular,
   BoxMultipleCheckmark24Filled,
+  BuildingMultiple24Regular,
+  BuildingMultiple24Filled,
   bundleIcon,
 } from '@fluentui/react-icons';
 import { useAuth } from '../context/AuthContext';
@@ -39,6 +41,7 @@ const BoxMultipleCheckmark = bundleIcon(
   BoxMultipleCheckmark24Filled,
   BoxMultipleCheckmark24Regular,
 );
+const BuildingMultiple = bundleIcon(BuildingMultiple24Filled, BuildingMultiple24Regular);
 
 const useStyles = makeStyles({
   navigationDrawer: {
@@ -98,9 +101,11 @@ export default function Navigation({
     ? 'users'
     : location.pathname.startsWith('/pallets')
       ? 'pallet-products'
-      : location.pathname === '/'
-        ? 'pallet-products' // Default to pallets
-        : location.pathname.substring(1);
+      : location.pathname.startsWith('/empresas')
+        ? 'empresas'
+        : location.pathname === '/'
+          ? 'pallet-products' // Default to pallets
+          : location.pathname.substring(1);
 
   const handleLogout = async () => {
     setIsOpen(false);
@@ -126,8 +131,9 @@ export default function Navigation({
   const canManageUsers = user && ['admin', 'developer'].includes(user.role);
   const canManagePalletPositions = user && ['admin', 'developer'].includes(user.role);
   const canViewPalletProducts = user && ['admin', 'developer', 'deposito'].includes(user.role);
+  const canManageEmpresas = user && user.role === 'admin';
 
-  const hasAccessControlItems = canManageUsers || canManagePalletPositions;
+  const hasAccessControlItems = canManageUsers || canManagePalletPositions || canManageEmpresas;
 
   const empresa = 'Empresa S.A.';
   const empresaDesc = 'Control de Pallets';
@@ -171,6 +177,15 @@ export default function Navigation({
             {canManageUsers && (
               <NavItem icon={<Peoples />} onClick={() => handleNavigate('/users')} value="users">
                 Gestión de Usuarios
+              </NavItem>
+            )}
+            {canManageEmpresas && (
+              <NavItem
+                icon={<BuildingMultiple />}
+                onClick={() => handleNavigate('/empresas')}
+                value="empresas"
+              >
+                Gestión de Empresas
               </NavItem>
             )}
             {canManagePalletPositions && (

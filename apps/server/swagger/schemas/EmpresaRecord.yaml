@@ -44,6 +44,10 @@ properties:
     type: string
     nullable: true
     example: 'Tecnología'
+  logoUrl:
+    type: string
+    nullable: true
+    example: '/logos/empresa1.png'
   fechaAlta:
     type: string
     format: date

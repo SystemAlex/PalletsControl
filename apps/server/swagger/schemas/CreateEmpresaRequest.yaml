@@ -46,6 +46,10 @@ properties:
     type: string
     nullable: true
     example: 'Manufactura'
+  logoUrl:
+    type: string
+    nullable: true
+    example: '/logos/nuevaempresa.png'
   activo:
     type: boolean
     example: true

@@ -78,20 +78,26 @@ export async function getActiveUsers(
     activeUserConditions.push(eq(users.idEmpresa, requesterIdEmpresa));
   }
 
-  const activeUsers = await db
+  const activeUsersRaw = await db
     .select({
       id: users.id,
       username: users.username,
       realname: users.realname,
       role: users.role,
-      lastActivityAt: sql<string>`${users.lastActivityAt}::text`.as('lastActivityAt'), // Convertir a string
+      lastActivityAt: users.lastActivityAt, // Returns Date | null
       idEmpresa: users.idEmpresa,
     })
     .from(users)
     .where(and(...activeUserConditions))
     .orderBy(desc(users.lastActivityAt));
 
-  return activeUsers as ActiveUser[]; // Error 1 corregido por la conversión SQL
+  // Convert Date objects to ISO strings for ActiveUser interface
+  const activeUsers: ActiveUser[] = activeUsersRaw.map((u) => ({
+    ...u,
+    lastActivityAt: u.lastActivityAt ? u.lastActivityAt.toISOString() : '', // ActiveUser expects string
+  }));
+
+  return activeUsers;
 }
 
 // --- Fetch Users (Paginated List) ---
@@ -115,7 +121,7 @@ export async function getUsers(
         ilike(users.realname, searchPattern),
         ilike(users.email, searchPattern),
         ilike(users.role, searchPattern),
-      )!, // Error 2: Añadir ! para asegurar que or no sea undefined
+      )!,
     );
   }
 
@@ -132,10 +138,10 @@ export async function getUsers(
       email: users.email,
       role: users.role,
       isActive: users.isActive,
-      lastLoginAt: sql<string | null>`${users.lastLoginAt}::text`.as('lastLoginAt'), // Convertir a string
-      createdAt: sql<string>`${users.createdAt}::text`.as('createdAt'), // Convertir a string
+      lastLoginAt: users.lastLoginAt, // Returns Date | null
+      createdAt: users.createdAt, // Returns Date
       idEmpresa: users.idEmpresa,
-      mustChangePassword: users.mustChangePassword, // Incluir mustChangePassword
+      mustChangePassword: users.mustChangePassword,
     })
     .from(users)
     .where(userListConditions.length > 0 ? and(...userListConditions) : undefined)
@@ -143,7 +149,14 @@ export async function getUsers(
     .limit(limit)
     .offset(offset);
 
-  const userList = await query;
+  const userListRaw = await query;
+
+  // Convert Date objects to ISO strings for UserApiResponse interface
+  const userList: UserApiResponse[] = userListRaw.map((u) => ({
+    ...u,
+    createdAt: u.createdAt.toISOString(),
+    lastLoginAt: u.lastLoginAt ? u.lastLoginAt.toISOString() : null,
+  })) as UserApiResponse[];
 
   const totalCountQuery = db
     .select({ count: sql<number>`count(*)` })
@@ -152,7 +165,7 @@ export async function getUsers(
 
   const [{ count: totalCount }] = await totalCountQuery;
 
-  return { users: userList as UserApiResponse[], totalCount: totalCount ?? 0 }; // Error 3 corregido por la conversión SQL
+  return { users: userList, totalCount: totalCount ?? 0 };
 }
 
 // --- Create User ---
@@ -215,7 +228,7 @@ export async function createUser(
 
   const passwordHash = await bcrypt.hash(password, 10);
 
-  const [newUser] = await db
+  const [newUserRaw] = await db
     .insert(users)
     .values({
       username,
@@ -230,15 +243,27 @@ export async function createUser(
       id: users.id,
       username: users.username,
       realname: users.realname,
+      email: users.email,
       role: users.role,
       isActive: users.isActive,
       idEmpresa: users.idEmpresa,
       mustChangePassword: users.mustChangePassword,
-      createdAt: sql<string>`${users.createdAt}::text`.as('createdAt'),
-      lastLoginAt: sql<string | null>`${users.lastLoginAt}::text`.as('lastLoginAt'),
+      createdAt: users.createdAt, // Returns Date
+      lastLoginAt: users.lastLoginAt, // Returns Date | null
     });
 
-  return newUser as UserApiResponse;
+  if (!newUserRaw) {
+    throw new Error('Failed to create user.');
+  }
+
+  // Convert Date objects to ISO strings for UserApiResponse interface
+  const newUser: UserApiResponse = {
+    ...newUserRaw,
+    createdAt: newUserRaw.createdAt.toISOString(),
+    lastLoginAt: newUserRaw.lastLoginAt ? newUserRaw.lastLoginAt.toISOString() : null,
+  };
+
+  return newUser;
 }
 
 // --- Update User ---
@@ -336,6 +361,7 @@ export async function updateUser(
       id: users.id,
       username: users.username,
       realname: users.realname,
+      email: users.email,
       role: users.role,
       isActive: users.isActive,
       idEmpresa: users.idEmpresa,
@@ -440,5 +466,5 @@ export async function resetUserPassword(
     throw new NotFoundError('Usuario no encontrado o no se pudo resetear la contraseña');
   }
 
-  return updatedUser as Pick<UserApiResponse, 'id' | 'username' | 'mustChangePassword'>; // Error 4 corregido
+  return updatedUser as Pick<UserApiResponse, 'id' | 'username' | 'mustChangePassword'>;
 }

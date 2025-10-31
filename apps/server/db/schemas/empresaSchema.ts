@@ -25,6 +25,7 @@ export const empresas = pgTable(
     email: text('email').notNull().unique(), // Ahora es NOT NULL y UNIQUE
     sitioWeb: text('sitio_web'),
     sector: text('sector'),
+    logoUrl: text('logo_url'), // Nuevo campo para la URL del logo
     fechaAlta: date('fecha_alta', { mode: 'string' })
       .notNull()
       .default(sql`CURRENT_DATE`),

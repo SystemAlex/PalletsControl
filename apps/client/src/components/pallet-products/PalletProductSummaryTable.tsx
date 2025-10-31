@@ -60,9 +60,18 @@ const useStyles = makeStyles({
     top: '0px',
     zIndex: 1,
     textAlign: 'center',
-    padding: '0px',
+    paddingInline: '0px',
     '&:has(span)': {
       backgroundColor: tokens.colorBrandBackgroundSelected,
+    },
+    '&:hover': {
+      backgroundColor: tokens.colorBrandBackgroundHover,
+      '& > *': {
+        opacity: 0.7,
+      },
+    },
+    '&:active': {
+      backgroundColor: tokens.colorBrandBackgroundPressed,
     },
     '& > *': {
       display: 'grid',
@@ -342,7 +351,7 @@ export const PalletProductSummaryTable: React.FC<PalletProductSummaryTableProps>
   );
 
   return (
-    <Table size="small" aria-label="Resumen de Pallets por Producto" className={styles.table}>
+    <Table size="small" aria-label="Resumen de Pallets por Producto" className={styles.table} sortable>
       <TableHeader>
         <TableRow>
           {columns.map((column, id) => (

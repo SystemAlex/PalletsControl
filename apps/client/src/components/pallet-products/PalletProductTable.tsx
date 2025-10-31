@@ -65,6 +65,12 @@ const useStyles = makeStyles({
     '&:has(span)': {
       backgroundColor: tokens.colorBrandBackgroundSelected,
     },
+    '&:hover': {
+      backgroundColor: tokens.colorBrandBackgroundHover,
+    },
+    '&:active': {
+      backgroundColor: tokens.colorBrandBackgroundPressed,
+    },
   },
   positionCell: {
     scrollMarginTop: '67px',
@@ -373,7 +379,7 @@ export const PalletProductTable: React.FC<PalletProductTableProps> = ({
   }, [highlightedProductId, sortedRows, isMobile]);
 
   return (
-    <Table size="small" aria-label="Control Pallets" className={styles.table}>
+    <Table size="small" aria-label="Control Pallets" className={styles.table} sortable>
       <TableHeader>
         <TableRow className={styles.fileHeader}>
           {columns.map((column, id) => (
