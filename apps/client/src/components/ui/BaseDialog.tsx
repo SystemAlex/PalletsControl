@@ -11,6 +11,7 @@ import {
   makeStyles,
   mergeClasses,
   Button,
+  DialogTrigger,
 } from '@fluentui/react-components';
 import { Dismiss24Regular } from '@fluentui/react-icons';
 
@@ -20,8 +21,10 @@ interface BaseDialogProps {
   title: string | React.ReactNode;
   children: React.ReactNode;
   actions?: React.ReactNode;
+  titleActions?: React.ReactNode;
   isForcedChange?: boolean;
   fitContent?: boolean;
+  halfWidth?: boolean;
 }
 
 const SlideDialogMotion = createPresenceComponent(() => {
@@ -61,6 +64,12 @@ const useStyles = makeStyles({
       padding: '8px !important',
     },
   },
+  dialogHalf: {
+    maxWidth: '50%',
+    '@media(max-width: 1024px)': {
+      maxWidth: 'auto',
+    },
+  },
   dialogBodyMov: {
     maxHeight: 'calc(100dvh - 84px)',
   },
@@ -78,8 +87,10 @@ export default function BaseDialog({
   title,
   children,
   actions,
+  titleActions,
   isForcedChange = false,
   fitContent,
+  halfWidth,
 }: BaseDialogProps) {
   const styles = useStyles();
   const handleOpenChange = (_: unknown, data: { open: boolean }) => {
@@ -101,21 +112,23 @@ export default function BaseDialog({
         className={mergeClasses(
           styles.dialogSurfaceMov,
           fitContent ? styles.dialogSurface : undefined,
+          halfWidth ? styles.dialogHalf : undefined,
         )}
       >
         <DialogBody className={styles.dialogBodyMov}>
-          <DialogTitle>
-            <div className={styles.dialogHeader}>
-              <span>{title}</span>
-              {!actions && (
-                <Button
-                  appearance="subtle"
-                  icon={<Dismiss24Regular />}
-                  aria-label="Close"
-                  onClick={() => onOpenChange(false)}
-                />
-              )}
-            </div>
+          <DialogTitle
+            action={
+              <>
+                {!actions && !titleActions && (
+                  <DialogTrigger action="close">
+                    <Button appearance="subtle" aria-label="close" icon={<Dismiss24Regular />} />
+                  </DialogTrigger>
+                )}
+                {titleActions && titleActions}
+              </>
+            }
+          >
+            {title}
           </DialogTitle>
           <DialogContent>{children}</DialogContent>
           {actions && <DialogActions>{actions}</DialogActions>}

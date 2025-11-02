@@ -10,6 +10,25 @@ export const useCommonStyles = makeStyles({
       height: 'auto',
     },
   },
+  fieldVertical: {
+    position: 'relative',
+    '@media(max-width: 768px)': {
+      gridTemplateColumns: 'auto',
+      height: 'auto',
+    },
+    '& > :nth-child(3)': {
+      position: 'absolute',
+      top: 0,
+      right: 0,
+    },
+  },
+  switchField: {
+    gridTemplateColumns: '131px 1fr',
+    alignItems: 'center',
+    '@media(max-width: 768px)': {
+      gridTemplateColumns: '1fr',
+    },
+  },
   // Estilos para contenedores flexibles (ej. para botones o paneles)
   flexBox: {
     display: 'flex',

@@ -1,4 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000"><style>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000">
+  <style>
     #light-icon {
       display: inline;
     }
@@ -14,42 +15,122 @@
         display: inline;
       }
     }
-  </style><g id="light-icon"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000"><g><g transform="matrix(31.25,0,0,31.25,0,0)"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="32" height="32"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-  <style>
-    :root {
-      --colorBrandForegroundOnLightPressed: #552380;
-      --colorBrandForegroundInvertedHover: #ac76d6;
-      --colorBrandBackground2Pressed: #c399e2;
-      --colorBrandForeground2Pressed: #331848;
-    }
   </style>
-  <rect width="32" height="32" fill="none"></rect>
-  <!-- Ícono del pallet --> 
-  <g transform="translate(4, 4)">
-    <rect x="0" y="14" width="24" height="6" rx="1" fill="var(--colorBrandForegroundOnLightPressed)"></rect>
-    <rect x="0" y="8" width="24" height="5" rx="1" fill="var(--colorBrandForegroundInvertedHover)"></rect>
-    <rect x="0" y="2" width="24" height="5" rx="1" fill="var(--colorBrandBackground2Pressed)"></rect>
-    <rect x="3" y="20" width="3" height="4" rx="0.5" fill="var(--colorBrandForeground2Pressed)"></rect>
-    <rect x="10.5" y="20" width="3" height="4" rx="0.5" fill="var(--colorBrandForeground2Pressed)"></rect>
-    <rect x="18" y="20" width="3" height="4" rx="0.5" fill="var(--colorBrandForeground2Pressed)"></rect>
+  <g id="light-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000">
+      <g clip-path="url(#SvgjsClipPath1097)">
+        <g transform="matrix(6.349215307534826,0,0,6.349215307534826,50,50)">
+          <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="141.7498" height="141.7498">
+            <svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 141.7498 141.7498">
+              <defs>
+                <style>
+      .cls-1 {
+        fill: none;
+      }
+
+      .cls-2 {
+        fill: #1e72b9;
+      }
+
+      .cls-3 {
+        fill: #f57f20;
+      }
+
+      .cls-4 {
+        fill: #3d52a3;
+      }
+
+      .cls-50 {
+        fill: #7b4fa0;
+      }
+    </style>
+                <clipPath id="SvgjsClipPath1097">
+                  <rect width="1000" height="1000" x="0" y="0" rx="150" ry="150"></rect>
+                </clipPath>
+              </defs>
+              <g id="Capa_2-2" data-name="Capa 2">
+                <rect class="cls-1" width="141.7498" height="141.7498"></rect>
+                <g>
+                  <g>
+                    <rect class="cls-50" x="26.8749" y="11.911" width="88" height="18" rx="1" ry="1"></rect>
+                    <rect class="cls-50" x="26.8749" y="33.8859" width="88" height="18" rx="1" ry="1"></rect>
+                    <rect class="cls-50" x="26.8749" y="55.8609" width="88" height="18" rx="1" ry="1"></rect>
+                    <rect class="cls-50" x="26.8749" y="77.8358" width="88" height="18" rx="1" ry="1"></rect>
+                    <g>
+                      <rect class="cls-2" x="26.8749" y="99.8108" width="11" height="14.6667" rx=".5" ry=".5"></rect>
+                      <rect class="cls-2" x="65.3749" y="99.8108" width="11" height="14.6667" rx=".5" ry=".5"></rect>
+                      <rect class="cls-2" x="103.8749" y="99.8108" width="11" height="14.6667" rx=".5" ry=".5"></rect>
+                      <rect class="cls-2" x="26.8749" y="99.8108" width="88" height="4.7121" rx=".5" ry=".5"></rect>
+                    </g>
+                  </g>
+                  <rect class="cls-4" x="12.2325" y="5" width="10" height="131.7498"></rect>
+                  <rect class="cls-4" x="119.5173" y="5" width="10" height="131.7498"></rect>
+                  <rect class="cls-3" x="17.2325" y="116.607" width="107.2848" height="15.1428"></rect>
+                </g>
+              </g>
+            </svg>
+          </svg>
+        </g>
+      </g>
+    </svg>
   </g>
-</svg></svg></g></g></svg></g><g id="dark-icon"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000"><g><g transform="matrix(31.25,0,0,31.25,0,0)"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="32" height="32"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-  <style>
-    :root {
-      --colorBrandForegroundOnLightPressed: #552380;
-      --colorBrandForegroundInvertedHover: #7a2bbd;
-      --colorBrandBackground2Pressed: #040206;
-      --colorBrandForeground2Pressed: #e4cff2;
-    }
-  </style>
-  <rect width="32" height="32" fill="none"></rect>
-  <!-- Ícono del pallet --> 
-  <g transform="translate(4, 4)">
-    <rect x="0" y="14" width="24" height="6" rx="1" fill="var(--colorBrandForegroundOnLightPressed)"></rect>
-    <rect x="0" y="8" width="24" height="5" rx="1" fill="var(--colorBrandForegroundInvertedHover)"></rect>
-    <rect x="0" y="2" width="24" height="5" rx="1" fill="var(--colorBrandBackground2Pressed)"></rect>
-    <rect x="3" y="20" width="3" height="4" rx="0.5" fill="var(--colorBrandForeground2Pressed)"></rect>
-    <rect x="10.5" y="20" width="3" height="4" rx="0.5" fill="var(--colorBrandForeground2Pressed)"></rect>
-    <rect x="18" y="20" width="3" height="4" rx="0.5" fill="var(--colorBrandForeground2Pressed)"></rect>
+  <g id="dark-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000">
+      <g clip-path="url(#SvgjsClipPath1098)">
+        <rect width="1000" height="1000" fill="#e4cff2"></rect>
+        <g transform="matrix(6.349215307534826,0,0,6.349215307534826,50,50)">
+          <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="141.7498" height="141.7498">
+            <svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 141.7498 141.7498">
+              <defs>
+                <style>
+      .cls-1 {
+        fill: none;
+      }
+
+      .cls-2 {
+        fill: #1e72b9;
+      }
+
+      .cls-3 {
+        fill: #f57f20;
+      }
+
+      .cls-4 {
+        fill: #3d52a3;
+      }
+
+      .cls-5 {
+        fill: #af88be;
+      }
+    </style>
+                <clipPath id="SvgjsClipPath1098">
+                  <rect width="1000" height="1000" x="0" y="0" rx="100" ry="100"></rect>
+                </clipPath>
+              </defs>
+              <g id="Capa_1-2" data-name="Capa 1">
+                <rect class="cls-1" width="141.7498" height="141.7498"></rect>
+                <g>
+                  <g>
+                    <rect class="cls-5" x="26.8749" y="11.911" width="88" height="18" rx="1" ry="1"></rect>
+                    <rect class="cls-5" x="26.8749" y="33.8859" width="88" height="18" rx="1" ry="1"></rect>
+                    <rect class="cls-5" x="26.8749" y="55.8609" width="88" height="18" rx="1" ry="1"></rect>
+                    <rect class="cls-5" x="26.8749" y="77.8358" width="88" height="18" rx="1" ry="1"></rect>
+                    <g>
+                      <rect class="cls-2" x="26.8749" y="99.8108" width="11" height="14.6667" rx=".5" ry=".5"></rect>
+                      <rect class="cls-2" x="65.3749" y="99.8108" width="11" height="14.6667" rx=".5" ry=".5"></rect>
+                      <rect class="cls-2" x="103.8749" y="99.8108" width="11" height="14.6667" rx=".5" ry=".5"></rect>
+                      <rect class="cls-2" x="26.8749" y="99.8108" width="88" height="4.7121" rx=".5" ry=".5"></rect>
+                    </g>
+                  </g>
+                  <rect class="cls-4" x="12.2325" y="5" width="10" height="131.7498"></rect>
+                  <rect class="cls-4" x="119.5173" y="5" width="10" height="131.7498"></rect>
+                  <rect class="cls-3" x="17.2325" y="116.607" width="107.2848" height="15.1428"></rect>
+                </g>
+              </g>
+            </svg>
+          </svg>
+        </g>
+      </g>
+    </svg>
   </g>
-</svg></svg></g></g></svg></g></svg>
+</svg>

@@ -6,11 +6,13 @@ import {
   Hamburger,
   tokens,
   Title2,
+  Button,
 } from '@fluentui/react-components';
 import Navigation from '../components/Navigation';
 import ChangePasswordDialog from '../components/dialogs/ChangePasswordDialog';
 import PalletPositionDialog from '../components/dialogs/PalletPositionDialog';
 import Logo from '../components/ui/Logo';
+import Drawer from '@/assets/drawer.svg?react';
 
 const useStyles = makeStyles({
   root: {
@@ -31,9 +33,13 @@ const useStyles = makeStyles({
     zIndex: 10,
     overflow: 'hidden',
     columnGap: tokens.spacingVerticalL,
+    '@media(max-width: 1023px)': {
+      columnGap: tokens.spacingVerticalM,
+      padding: '0px 12px',
+    },
     '@media(max-width: 768px)': {
       columnGap: tokens.spacingVerticalS,
-      padding: '8px',
+      padding: tokens.spacingVerticalS,
       minHeight: '32px',
     },
   },
@@ -41,6 +47,9 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     columnGap: tokens.spacingVerticalL,
+    '@media(max-width: 1023px)': {
+      columnGap: tokens.spacingVerticalM,
+    },
     '@media(max-width: 768px)': {
       columnGap: tokens.spacingVerticalS,
       display: 'grid',
@@ -49,7 +58,6 @@ const useStyles = makeStyles({
   },
   headerTitle: {
     lineHeight: '1',
-    alignSelf: 'flex-end',
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
@@ -64,6 +72,9 @@ const useStyles = makeStyles({
     alignItems: 'center',
     textWrap: 'nowrap',
     columnGap: tokens.spacingVerticalL,
+    '@media(max-width: 1023px)': {
+      columnGap: tokens.spacingVerticalM,
+    },
     '@media(max-width: 768px)': {
       columnGap: tokens.spacingVerticalS,
     },
@@ -75,6 +86,13 @@ const useStyles = makeStyles({
     '@media(max-width: 600px)': {},
   },
   logoHiddenMobile: {
+    lineHeight: '1',
+    '@media(max-width: 1023px)': {
+      width: '33%',
+      '& > *': {
+        width: '100%',
+      },
+    },
     '@media(max-width: 768px)': {
       display: 'none',
     },
@@ -167,10 +185,12 @@ export default function MainLayout() {
 
       <header className={styles.header}>
         <div className={styles.headerLeft}>
-          <Hamburger
+          <Button
             onClick={() => setNavOpen(true)}
             aria-label="Abrir menú de navegación"
             {...restoreFocusTargetAttributes}
+            icon={<Drawer />}
+            appearance="transparent"
           />
           <Link to="/" className={styles.logoHiddenMobile}>
             <Logo />

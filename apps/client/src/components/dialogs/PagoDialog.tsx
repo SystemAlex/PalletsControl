@@ -29,14 +29,6 @@ const useStyles = makeStyles({
     gap: '12px',
     paddingTop: '12px',
   },
-  field: {
-    height: '48px',
-    gridTemplateColumns: '131px 1fr',
-    '@media(max-width: 768px)': {
-      gridTemplateColumns: '1fr',
-      height: 'auto',
-    },
-  },
   dateInput: {
     width: '100%',
   },

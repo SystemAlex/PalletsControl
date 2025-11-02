@@ -1,41 +1,98 @@
 import React, { useEffect, FormEvent, useRef } from 'react';
-import { Button, Input, Switch, makeStyles, Field, mergeClasses, Combobox, Option } from '@fluentui/react-components';
+import {
+  Button,
+  Input,
+  Switch,
+  makeStyles,
+  Field,
+  mergeClasses,
+  Combobox,
+  Option,
+  Divider,
+  tokens,
+  Card,
+} from '@fluentui/react-components';
 import BaseDialog from '../ui/BaseDialog';
 import { useFormValidationEmpresa } from '../../hooks/useFormValidationEmpresa';
 import { FrecuenciaPago } from '../../../../shared/types'; // Import FrecuenciaPago
+import { useCommonStyles } from '../../theme/commonStyles';
+import { capitalize } from '../../utils/helper';
 
 const useStyles = makeStyles({
-  // Estilos específicos para el layout del formulario
+  hidden: { display: 'none' },
   formGrid: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '6px',
+  },
+  divider: {
+    fontSize: tokens.fontSizeBase300,
+    fontWeight: tokens.fontWeightSemibold,
+  },
+  row1: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '12px',
-    paddingTop: '12px',
-    '@media(max-width: 768px)': {
-      gridTemplateColumns: '1fr',
+    gridTemplateColumns: '1fr auto',
+    gridTemplateRows: 'auto auto auto',
+    columnGap: '6px',
+    rowGap: '4px',
+    width: '100%',
+    minWidth: '100%',
+    maxWidth: '100%',
+    boxSizing: 'border-box',
+    '&  *': {
+      minWidth: '0px',
+      maxWidth: '100%',
+      flexGrow: 0,
     },
+  },
+  row2: {
+    display: 'grid',
+    gridTemplateColumns: 'auto 1fr',
+    gridTemplateRows: 'auto auto auto',
+    columnGap: '6px',
+    rowGap: '4px',
+    width: '100%',
+    minWidth: '100%',
+    maxWidth: '100%',
+    boxSizing: 'border-box',
+    '&  *': {
+      minWidth: '0px',
+      maxWidth: '100%',
+      flexGrow: 0,
+    },
+  },
+  row3: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(calc((100% - 12px) / 3), 1fr))',
+    gridTemplateRows: 'auto auto',
+    columnGap: '6px',
+    rowGap: '4px',
+    '@media(max-width: 600px)': {
+      gridTemplateColumns: '1fr',
+      gridTemplateRows: 'repeat(auto-fit)',
+    },
+  },
+  comboBox: {
+    minWidth: 0,
+    '& input': { width: '100%' },
   },
   fullWidth: {
-    gridColumn: 'span 2 / span 2',
-    '@media(max-width: 768px)': {
-      gridColumn: 'span 1 / span 1',
+    gridColumn: '1 / -1',
+  },
+  fantWidth: {},
+  cuitWidth: {
+    gridColumnStart: 2,
+    gridRowStart: 2,
+    '& > :nth-child(2)': {
+      width: '160px',
     },
   },
-  field: {
-    height: '48px',
-    gridTemplateColumns: '131px 1fr',
-    '@media(max-width: 768px)': {
-      gridTemplateColumns: '1fr',
-      height: 'auto',
+  telWidth: {
+    '& > :nth-child(2)': {
+      width: '140px',
     },
   },
-  switchField: {
-    gridTemplateColumns: '131px 1fr',
-    alignItems: 'center',
-    '@media(max-width: 768px)': {
-      gridTemplateColumns: '1fr',
-    },
-  },
+  headerSwitch: { alignItems: 'center', height: '28px' },
 });
 
 export interface EmpresaFormData {
@@ -74,6 +131,7 @@ export default function EmpresaDialog({
   empresaToEdit,
 }: EmpresaDialogProps) {
   const styles = useStyles();
+  const commonStyles = useCommonStyles();
   const firstInputRef = useRef<HTMLInputElement>(null);
 
   const initialValues: EmpresaFormData = {
@@ -185,210 +243,253 @@ export default function EmpresaDialog({
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       handleChange(name, e.target.value);
     };
-    
+
   const handleFrecuenciaSelect = (_: unknown, data: { optionValue?: string }) => {
     if (data.optionValue) {
       handleChange('frecuenciaPago', data.optionValue as FrecuenciaPago);
     }
   };
 
+  // cuit 6/8  160px
+  // tel  8/15 140px
+
   return (
-    <BaseDialog
-      open={open}
-      onOpenChange={handleDialogChange}
-      title={isEditing ? 'Editar Empresa' : 'Crear Nueva Empresa'}
-      actions={
-        <>
-          <Button
-            appearance="secondary"
-            onClick={() => handleDialogChange(false)}
-            disabled={isBusy}
-          >
-            Cancelar
-          </Button>
-          <Button appearance="primary" onClick={handleSubmit} disabled={isBusy || !isValid}>
-            {isBusy ? 'Guardando...' : isEditing ? 'Guardar Cambios' : 'Crear Empresa'}
-          </Button>
-        </>
-      }
-    >
-      <form onSubmit={handleSubmit} className={styles.formGrid}>
-        {/* Columna 1 */}
-        <Field
-          label="Razón Social"
-          orientation="horizontal"
-          required
-          className={styles.field}
-          validationMessage={showError('razonSocial') as string | undefined}
-          validationState={showError('razonSocial') ? 'error' : undefined}
-        >
-          <Input
-            ref={firstInputRef}
-            value={formData.razonSocial}
-            onChange={handleInputChange('razonSocial')}
-            onBlur={() => handleBlur('razonSocial')}
-            onKeyDown={handleKeyDown}
-            disabled={isBusy}
-          />
-        </Field>
-        <Field label="Nombre Fantasía" orientation="horizontal" className={styles.field}>
-          <Input
-            value={formData.nombreFantasia || ''}
-            onChange={handleInputChange('nombreFantasia')}
-            onBlur={() => handleBlur('nombreFantasia')}
-            onKeyDown={handleKeyDown}
-            disabled={isBusy}
-          />
-        </Field>
-        <Field
-          label="CUIT"
-          orientation="horizontal"
-          required
-          className={styles.field}
-          validationMessage={showError('cuit') as string | undefined}
-          validationState={showError('cuit') ? 'error' : undefined}
-        >
-          <Input
-            value={formData.cuit}
-            onChange={handleInputChange('cuit')}
-            onBlur={() => handleBlur('cuit')}
-            onKeyDown={handleKeyDown}
-            disabled={isBusy}
-          />
-        </Field>
-        <Field
-          label="Teléfono"
-          orientation="horizontal"
-          required
-          className={styles.field}
-          validationMessage={showError('telefono') as string | undefined}
-          validationState={showError('telefono') ? 'error' : undefined}
-        >
-          <Input
-            value={formData.telefono}
-            onChange={handleInputChange('telefono')}
-            onBlur={() => handleBlur('telefono')}
-            onKeyDown={handleKeyDown}
-            disabled={isBusy}
-          />
-        </Field>
-        <Field
-          label="Email"
-          orientation="horizontal"
-          required
-          className={styles.field}
-          validationMessage={showError('email') as string | undefined}
-          validationState={showError('email') ? 'error' : undefined}
-        >
-          <Input
-            type="email"
-            value={formData.email}
-            onChange={handleInputChange('email')}
-            onBlur={() => handleBlur('email')}
-            onKeyDown={handleKeyDown}
-            disabled={isBusy}
-          />
-        </Field>
-        <Field label="Sitio Web" orientation="horizontal" className={styles.field}>
-          <Input
-            value={formData.sitioWeb || ''}
-            onChange={handleInputChange('sitioWeb')}
-            onBlur={() => handleBlur('sitioWeb')}
-            onKeyDown={handleKeyDown}
-            disabled={isBusy}
-          />
-        </Field>
-
-        {/* Columna 2 */}
-        <Field label="Dirección" orientation="horizontal" className={styles.field}>
-          <Input
-            value={formData.direccion || ''}
-            onChange={handleInputChange('direccion')}
-            onBlur={() => handleBlur('direccion')}
-            onKeyDown={handleKeyDown}
-            disabled={isBusy}
-          />
-        </Field>
-        <Field label="Ciudad" orientation="horizontal" className={styles.field}>
-          <Input
-            value={formData.ciudad || ''}
-            onChange={handleInputChange('ciudad')}
-            onBlur={() => handleBlur('ciudad')}
-            onKeyDown={handleKeyDown}
-            disabled={isBusy}
-          />
-        </Field>
-        <Field label="Provincia" orientation="horizontal" className={styles.field}>
-          <Input
-            value={formData.provincia || ''}
-            onChange={handleInputChange('provincia')}
-            onBlur={() => handleBlur('provincia')}
-            onKeyDown={handleKeyDown}
-            disabled={isBusy}
-          />
-        </Field>
-        <Field label="País" orientation="horizontal" className={styles.field}>
-          <Input
-            value={formData.pais || ''}
-            onChange={handleInputChange('pais')}
-            onBlur={() => handleBlur('pais')}
-            onKeyDown={handleKeyDown}
-            disabled={isBusy}
-          />
-        </Field>
-        <Field label="Sector" orientation="horizontal" className={styles.field}>
-          <Input
-            value={formData.sector || ''}
-            onChange={handleInputChange('sector')}
-            onBlur={() => handleBlur('sector')}
-            onKeyDown={handleKeyDown}
-            disabled={isBusy}
-          />
-        </Field>
-        <Field label="Logo URL" orientation="horizontal" className={styles.field}>
-          <Input
-            value={formData.logoUrl || ''}
-            onChange={handleInputChange('logoUrl')}
-            onBlur={() => handleBlur('logoUrl')}
-            onKeyDown={handleKeyDown}
-            disabled={isBusy}
-          />
-        </Field>
-
-        {/* Fila completa para Frecuencia y Activo */}
-        <Field
-          label="Frecuencia Pago"
-          orientation="horizontal"
-          className={styles.field}
-        >
-          <Combobox
-            value={formData.frecuenciaPago.charAt(0).toUpperCase() + formData.frecuenciaPago.slice(1)}
-            onOptionSelect={handleFrecuenciaSelect}
-            disabled={isBusy || isBaseCompany}
-          >
-            {frecuenciaOptions.map((f) => (
-              <Option key={f} value={f}>
-                {f.charAt(0).toUpperCase() + f.slice(1)}
-              </Option>
-            ))}
-          </Combobox>
-        </Field>
-
-        {isEditing && (
-          <Field
-            label="Estado"
-            orientation="horizontal"
-            className={mergeClasses(styles.switchField)}
-          >
-            <Switch
-              label={formData.activo ? 'Activo' : 'Inactivo'}
-              checked={formData.activo}
-              onChange={(_, data) => handleChange('activo', data.checked)}
-              disabled={isBusy || isBaseCompany} // Deshabilitar si es la empresa base
-            />
-          </Field>
-        )}
-      </form>
-    </BaseDialog>
+    <form onSubmit={handleSubmit} className={styles.hidden}>
+      <BaseDialog
+        open={open}
+        onOpenChange={handleDialogChange}
+        title={isEditing ? 'Editar Empresa' : 'Crear Nueva Empresa'}
+        actions={
+          <>
+            <Button
+              appearance="secondary"
+              onClick={() => handleDialogChange(false)}
+              disabled={isBusy}
+            >
+              Cancelar
+            </Button>
+            <Button appearance="primary" onClick={handleSubmit} disabled={isBusy || !isValid}>
+              {isBusy ? 'Guardando...' : isEditing ? 'Guardar Cambios' : 'Crear Empresa'}
+            </Button>
+          </>
+        }
+        titleActions={
+          <>
+            {isEditing && (
+              <Switch
+                label={formData.activo ? 'Activo' : 'Inactivo'}
+                checked={formData.activo}
+                onChange={(_, data) => handleChange('activo', data.checked)}
+                disabled={isBusy || isBaseCompany}
+                className={styles.headerSwitch}
+              />
+            )}
+          </>
+        }
+      >
+        <div className={styles.formGrid}>
+          <Divider className={styles.divider} appearance="brand" alignContent="start">
+            Identificación
+          </Divider>
+          <div className={styles.row1}>
+            <Field
+              label="Razón Social"
+              orientation="vertical"
+              required
+              className={mergeClasses(commonStyles.fieldVertical, styles.fullWidth)}
+              validationMessage={showError('razonSocial') as string | undefined}
+              validationState={showError('razonSocial') ? 'error' : undefined}
+            >
+              <Input
+                ref={firstInputRef}
+                value={formData.razonSocial}
+                onChange={handleInputChange('razonSocial')}
+                onBlur={() => handleBlur('razonSocial')}
+                onKeyDown={handleKeyDown}
+                disabled={isBusy}
+              />
+            </Field>
+            <Field
+              label="Nom. Fantasía"
+              orientation="vertical"
+              className={mergeClasses(commonStyles.fieldVertical, styles.fantWidth)}
+            >
+              <Input
+                value={formData.nombreFantasia || ''}
+                onChange={handleInputChange('nombreFantasia')}
+                onBlur={() => handleBlur('nombreFantasia')}
+                onKeyDown={handleKeyDown}
+                disabled={isBusy}
+              />
+            </Field>
+            <Field
+              label="CUIT"
+              orientation="vertical"
+              required
+              className={mergeClasses(commonStyles.fieldVertical, styles.cuitWidth)}
+              validationMessage={showError('cuit') as string | undefined}
+              validationState={showError('cuit') ? 'error' : undefined}
+            >
+              <Input
+                value={formData.cuit}
+                onChange={handleInputChange('cuit')}
+                onBlur={() => handleBlur('cuit')}
+                onKeyDown={handleKeyDown}
+                disabled={isBusy}
+              />
+            </Field>
+            <Field label="Logo" orientation="vertical" className={styles.fullWidth}>
+              <Input
+                value={formData.logoUrl || ''}
+                onChange={handleInputChange('logoUrl')}
+                onBlur={() => handleBlur('logoUrl')}
+                onKeyDown={handleKeyDown}
+                disabled={isBusy}
+              />
+            </Field>
+          </div>
+          <Divider className={styles.divider} appearance="brand" alignContent="start">
+            Contacto
+          </Divider>
+          <div className={styles.row2}>
+            <Field
+              label="Teléfono"
+              orientation="vertical"
+              required
+              className={mergeClasses(commonStyles.fieldVertical, styles.telWidth)}
+              validationMessage={showError('telefono') as string | undefined}
+              validationState={showError('telefono') ? 'error' : undefined}
+            >
+              <Input
+                value={formData.telefono}
+                onChange={handleInputChange('telefono')}
+                onBlur={() => handleBlur('telefono')}
+                onKeyDown={handleKeyDown}
+                disabled={isBusy}
+              />
+            </Field>
+            <Field
+              label="Email"
+              orientation="vertical"
+              required
+              className={mergeClasses(commonStyles.fieldVertical, styles.fantWidth)}
+              validationMessage={showError('email') as string | undefined}
+              validationState={showError('email') ? 'error' : undefined}
+            >
+              <Input
+                type="email"
+                value={formData.email}
+                onChange={handleInputChange('email')}
+                onBlur={() => handleBlur('email')}
+                onKeyDown={handleKeyDown}
+                disabled={isBusy}
+              />
+            </Field>
+            <Field
+              label="Sitio Web"
+              orientation="vertical"
+              className={mergeClasses(commonStyles.fieldVertical, styles.fullWidth)}
+            >
+              <Input
+                value={formData.sitioWeb || ''}
+                onChange={handleInputChange('sitioWeb')}
+                onBlur={() => handleBlur('sitioWeb')}
+                onKeyDown={handleKeyDown}
+                disabled={isBusy}
+              />
+            </Field>
+          </div>
+          <Divider className={styles.divider} appearance="brand" alignContent="start">
+            Domicilio
+          </Divider>
+          <div className={styles.row3}>
+            <Field
+              label="País"
+              orientation="vertical"
+              className={mergeClasses(commonStyles.fieldVertical)}
+            >
+              {/* <Input
+              value={formData.pais || ''}
+              onChange={handleInputChange('pais')}
+              onBlur={() => handleBlur('pais')}
+              onKeyDown={handleKeyDown}
+              disabled={isBusy}
+            /> */}
+              <Combobox className={styles.comboBox} />
+            </Field>
+            <Field
+              label="Provincia"
+              orientation="vertical"
+              className={mergeClasses(commonStyles.fieldVertical)}
+            >
+              {/* <Input
+              value={formData.provincia || ''}
+              onChange={handleInputChange('provincia')}
+              onBlur={() => handleBlur('provincia')}
+              onKeyDown={handleKeyDown}
+              disabled={isBusy}
+            /> */}
+              <Combobox className={styles.comboBox} />
+            </Field>
+            <Field label="Ciudad" orientation="vertical" className={commonStyles.fieldVertical}>
+              {/* <Input
+              value={formData.ciudad || ''}
+              onChange={handleInputChange('ciudad')}
+              onBlur={() => handleBlur('ciudad')}
+              onKeyDown={handleKeyDown}
+              disabled={isBusy}
+            /> */}
+              <Combobox className={styles.comboBox} />
+            </Field>
+            <Field
+              label="Dirección"
+              orientation="vertical"
+              className={mergeClasses(commonStyles.fieldVertical, styles.fullWidth)}
+            >
+              <Input
+                value={formData.direccion || ''}
+                onChange={handleInputChange('direccion')}
+                onBlur={() => handleBlur('direccion')}
+                onKeyDown={handleKeyDown}
+                disabled={isBusy}
+              />
+            </Field>
+          </div>
+          <Divider className={styles.divider} appearance="brand" alignContent="start">
+            Datos comerciales
+          </Divider>
+          <div className={styles.row3}>
+            <Field label="Sector" orientation="vertical" className={commonStyles.fieldVertical}>
+              {/* <Input
+                value={formData.sector || ''}
+                onChange={handleInputChange('sector')}
+                onBlur={() => handleBlur('sector')}
+                onKeyDown={handleKeyDown}
+                disabled={isBusy}
+              /> */}
+              <Combobox className={styles.comboBox} />
+            </Field>
+            <Field
+              label="Frecuencia Pago"
+              orientation="vertical"
+              className={commonStyles.fieldVertical}
+            >
+              <Combobox
+                value={capitalize(formData.frecuenciaPago)}
+                onOptionSelect={handleFrecuenciaSelect}
+                disabled={isBusy || isBaseCompany}
+                className={styles.comboBox}
+              >
+                {frecuenciaOptions.map((f) => (
+                  <Option key={f} value={f}>
+                    {f.charAt(0).toUpperCase() + f.slice(1)}
+                  </Option>
+                ))}
+              </Combobox>
+            </Field>
+          </div>
+        </div>
+      </BaseDialog>
+    </form>
   );
 }

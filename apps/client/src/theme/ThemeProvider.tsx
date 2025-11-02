@@ -7,11 +7,11 @@ import {
   makeResetStyles,
 } from '@fluentui/react-components';
 import { palletsDarkTheme, palletsLightTheme } from './customTheme';
+import { AppThemeContext } from '../context/AppThemeContext';
 
 // Estilos globales para scrollbar
 const useGlobalScrollbarStyles = makeResetStyles({
   ':global(*)': {
-    scrollbarWidth: 'thin',
     scrollbarColor: `${tokens.colorBrandBackground} ${tokens.colorBrandBackground2}`,
   },
 });
@@ -47,12 +47,15 @@ export const ThemeWrapper: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const globalScrollbar = useGlobalScrollbarStyles();
+  const isDark = theme === palletsDarkTheme;
 
   return (
-    <FluentProvider theme={theme} applyStylesToPortals className={globalScrollbar}>
-      <ApplyThemeToBody />
-      <Toaster toasterId="app-toaster" />
-      {children}
-    </FluentProvider>
+    <AppThemeContext.Provider value={{ theme, isDark }}>
+      <FluentProvider theme={theme} applyStylesToPortals className={globalScrollbar}>
+        <ApplyThemeToBody />
+        <Toaster toasterId="app-toaster" />
+        {children}
+      </FluentProvider>
+    </AppThemeContext.Provider>
   );
 };

@@ -46,6 +46,10 @@ const palletsTheme: BrandVariants = {
   160: '#E4CFF2',
 };
 
+// Logo Colors
+// On Dark: "colorBrandForeground2": "#b887dc",
+// On Ligth: "colorBrandBackground": "#873fc5",
+
 // Tema claro base
 const baseLight = createLightTheme(palletsTheme);
 

@@ -26,7 +26,9 @@ import {
   bundleIcon,
 } from '@fluentui/react-icons';
 import { useAuth } from '../context/AuthContext';
-import IconLogo from '/src/assets/LogoIcon.png';
+import { useAppTheme } from '../context/AppThemeContext';
+import IconLogoLight from '/src/assets/IconLight.png';
+import IconLogoDark from '/src/assets/IconDark.png';
 
 interface NavigationProps {
   isOpen: boolean;
@@ -96,6 +98,9 @@ export default function Navigation({
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { isDark } = useAppTheme();
+
+  const IconLogo = isDark ? IconLogoDark : IconLogoLight;
 
   const selectedValue = location.pathname.startsWith('/users')
     ? 'users'
@@ -174,11 +179,6 @@ export default function Navigation({
           <NavDivider />
           <NavSectionHeader>Administración</NavSectionHeader>
           <NavSectionHeader className={styles.flexUsers}>
-            {canManageUsers && (
-              <NavItem icon={<Peoples />} onClick={() => handleNavigate('/users')} value="users">
-                Gestión de Usuarios
-              </NavItem>
-            )}
             {canManageEmpresas && (
               <NavItem
                 icon={<BuildingMultiple />}
@@ -186,6 +186,11 @@ export default function Navigation({
                 value="empresas"
               >
                 Gestión de Empresas
+              </NavItem>
+            )}
+            {canManageUsers && (
+              <NavItem icon={<Peoples />} onClick={() => handleNavigate('/users')} value="users">
+                Gestión de Usuarios
               </NavItem>
             )}
             {canManagePalletPositions && (
