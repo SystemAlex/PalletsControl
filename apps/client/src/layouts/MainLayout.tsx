@@ -3,7 +3,6 @@ import { Link, Outlet, useOutletContext } from 'react-router-dom';
 import {
   makeStyles,
   useRestoreFocusTarget,
-  Hamburger,
   tokens,
   Title2,
   Button,
@@ -21,6 +20,7 @@ const useStyles = makeStyles({
     height: '100dvh',
     backgroundColor: tokens.colorNeutralBackground2,
   },
+  iconDrawer: { width: '100%' },
   header: {
     display: 'flex',
     alignItems: 'center',
@@ -189,7 +189,7 @@ export default function MainLayout() {
             onClick={() => setNavOpen(true)}
             aria-label="Abrir menú de navegación"
             {...restoreFocusTargetAttributes}
-            icon={<Drawer />}
+            icon={<Drawer className={styles.iconDrawer} />}
             appearance="transparent"
           />
           <Link to="/" className={styles.logoHiddenMobile}>

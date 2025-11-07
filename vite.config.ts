@@ -46,6 +46,6 @@ export default defineConfig({
     hmr: {
       port: 24679, // distinto al de AlquimiaWeb
     },
-    allowedHosts: ['palletsweb.serveo.net'],
+    allowedHosts: ['palletsweb.serveo.net', 'notebook-dell'],
   },
 });

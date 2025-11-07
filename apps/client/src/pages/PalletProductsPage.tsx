@@ -395,6 +395,7 @@ export default function PalletProductsPage() {
         onViewTypeChange={handleViewTypeChange}
         onOpenPalletActionLogDialog={handleOpenPalletActionLogDialog}
         canViewLogs={canViewLogs}
+        isMobile={isMobile}
       />
     );
   }, [

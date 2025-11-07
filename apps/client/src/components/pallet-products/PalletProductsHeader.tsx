@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Toolbar,
   ToolbarRadioButton,
@@ -9,20 +9,21 @@ import {
   InputOnChangeData,
   ToolbarButton,
   makeStyles,
+  Button,
+  mergeClasses,
 } from '@fluentui/react-components';
 import {
   GridRegular,
   TableRegular,
   History24Regular,
   TextBulletListSquareSparkleRegular,
+  SearchRegular,
 } from '@fluentui/react-icons';
 
 const useStyles = makeStyles({
   searchBox: {
     width: '220px',
-    '@media(max-width: 600px)': {
-      width: '150px',
-    },
+    '@media(max-width: 600px)': { display: 'none' },
     '&:focus-within': {
       '@media(max-width: 600px)': {
         width: '100%',
@@ -35,6 +36,8 @@ const useStyles = makeStyles({
     flexDirection: 'row',
     '@media(max-width: 600px)': {},
   },
+  show: { display: 'flex !important' },
+  hidden: { display: 'none' },
 });
 
 interface PalletProductsHeaderProps {
@@ -44,6 +47,7 @@ interface PalletProductsHeaderProps {
   onViewTypeChange: (viewType: 'table' | 'grid' | 'summary') => void; // Updated type
   onOpenPalletActionLogDialog: () => void;
   canViewLogs: boolean;
+  isMobile: boolean;
 }
 
 export const PalletProductsHeader: React.FC<PalletProductsHeaderProps> = ({
@@ -53,8 +57,18 @@ export const PalletProductsHeader: React.FC<PalletProductsHeaderProps> = ({
   onViewTypeChange,
   onOpenPalletActionLogDialog,
   canViewLogs,
+  isMobile,
 }) => {
   const styles = useStyles();
+  const [showSearch, setShowSearch] = useState<boolean>(false);
+
+  const searchRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (showSearch && searchRef.current) {
+      searchRef.current.focus();
+    }
+  }, [showSearch]);
 
   const viewToolbar = (
     <Toolbar
@@ -117,8 +131,23 @@ export const PalletProductsHeader: React.FC<PalletProductsHeaderProps> = ({
         placeholder="Buscar por código, artículo, fila..."
         value={searchQuery}
         onChange={onSearchChange}
-        className={styles.searchBox}
+        className={mergeClasses(styles.searchBox, showSearch && styles.show)}
+        ref={searchRef}
+        onBlur={(e) => {
+          if (e.currentTarget.value === '') setShowSearch(false);
+        }}
       />
+      {isMobile && (
+        <Tooltip content="Buscar" relationship="label">
+          <Button
+            aria-label="Mostrar SerahBox"
+            appearance="subtle"
+            icon={<SearchRegular />}
+            className={mergeClasses(showSearch && styles.hidden)}
+            onClick={() => setShowSearch(true)}
+          />
+        </Tooltip>
+      )}
       {viewToolbar}
     </>
   );

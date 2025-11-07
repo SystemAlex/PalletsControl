@@ -86,7 +86,7 @@ async function createServer() {
   app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
     // Specific handling for UnauthorizedError to reduce log verbosity for expected cases
     if (err instanceof UnauthorizedError) {
-      console.log(`[API Error Handled] 401 Unauthorized: ${err.message}`);
+      // console.log(`[API Error Handled] 401 Unauthorized: ${err.message}`);
       return res.status(err.statusCode).json({ message: err.message });
     }
 

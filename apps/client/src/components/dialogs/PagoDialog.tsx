@@ -228,7 +228,10 @@ export const PagoDialog: React.FC<PagoDialogProps> = ({
           />
         </Field>
         <Field label="Frecuencia" orientation="horizontal" className={commonStyles.field}>
-          <Input value={frecuenciaPago.charAt(0).toUpperCase() + frecuenciaPago.slice(1)} disabled />
+          <Input
+            value={frecuenciaPago.charAt(0).toUpperCase() + frecuenciaPago.slice(1)}
+            disabled
+          />
         </Field>
         <Field label="Método" orientation="horizontal" className={commonStyles.field}>
           <Combobox

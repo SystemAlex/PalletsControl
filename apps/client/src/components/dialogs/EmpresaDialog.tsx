@@ -10,13 +10,14 @@ import {
   Option,
   Divider,
   tokens,
-  Card,
+  OptionGroup,
 } from '@fluentui/react-components';
 import BaseDialog from '../ui/BaseDialog';
 import { useFormValidationEmpresa } from '../../hooks/useFormValidationEmpresa';
-import { FrecuenciaPago } from '../../../../shared/types'; // Import FrecuenciaPago
+import { FrecuenciaPago } from '../../../../shared/types';
 import { useCommonStyles } from '../../theme/commonStyles';
 import { capitalize } from '../../utils/helper';
+import { sectorOptions } from '../../utils/sectores';
 
 const useStyles = makeStyles({
   hidden: { display: 'none' },
@@ -110,7 +111,7 @@ export interface EmpresaFormData {
   sector: string | null;
   logoUrl: string | null;
   activo: boolean;
-  frecuenciaPago: FrecuenciaPago; // NEW
+  frecuenciaPago: FrecuenciaPago;
 }
 
 interface EmpresaDialogProps {
@@ -148,7 +149,7 @@ export default function EmpresaDialog({
     sector: null,
     logoUrl: null,
     activo: true,
-    frecuenciaPago: 'mensual', // Default value
+    frecuenciaPago: 'mensual',
   };
 
   const {
@@ -250,8 +251,10 @@ export default function EmpresaDialog({
     }
   };
 
-  // cuit 6/8  160px
-  // tel  8/15 140px
+  const [matchingSectors, setMatchingSectors] = React.useState(
+    sectorOptions.flatMap((g) => g.options),
+  );
+  const [customSector, setCustomSector] = React.useState<string | undefined>();
 
   return (
     <form onSubmit={handleSubmit} className={styles.hidden}>
@@ -460,14 +463,55 @@ export default function EmpresaDialog({
           </Divider>
           <div className={styles.row3}>
             <Field label="Sector" orientation="vertical" className={commonStyles.fieldVertical}>
-              {/* <Input
+              <Combobox
+                freeform
                 value={formData.sector || ''}
-                onChange={handleInputChange('sector')}
-                onBlur={() => handleBlur('sector')}
-                onKeyDown={handleKeyDown}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const allOptions = sectorOptions.flatMap((g) => g.options);
+                  const matches = allOptions.filter((opt) =>
+                    opt.toLowerCase().includes(value.toLowerCase()),
+                  );
+                  setMatchingSectors(matches);
+                  if (value.length && matches.length < 1) {
+                    setCustomSector(value);
+                  } else {
+                    setCustomSector(undefined);
+                  }
+                  handleChange('sector', value);
+                }}
+                onOptionSelect={(_, data) => {
+                  if (data.optionValue) {
+                    handleChange('sector', data.optionValue);
+                    setCustomSector(undefined);
+                  } else {
+                    setCustomSector(data.optionText);
+                    handleChange('sector', data.optionText || '');
+                  }
+                }}
                 disabled={isBusy}
-              /> */}
-              <Combobox className={styles.comboBox} />
+                className={styles.comboBox}
+                placeholder="Seleccione o escriba un sector"
+              >
+                {customSector ? (
+                  <Option key="freeform" value={customSector}>
+                    {`Usar "${customSector}"`}
+                  </Option>
+                ) : null}
+                {sectorOptions.map((group) => {
+                  const filtered = group.options.filter((opt) => matchingSectors.includes(opt));
+                  if (filtered.length === 0) return null;
+                  return (
+                    <OptionGroup key={group.label} label={group.label}>
+                      {filtered.map((opt) => (
+                        <Option key={opt} value={opt}>
+                          {opt}
+                        </Option>
+                      ))}
+                    </OptionGroup>
+                  );
+                })}
+              </Combobox>
             </Field>
             <Field
               label="Frecuencia Pago"

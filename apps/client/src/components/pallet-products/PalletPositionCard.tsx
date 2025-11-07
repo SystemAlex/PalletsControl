@@ -21,7 +21,7 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column-reverse',
     width: '-webkit-fill-available',
-    height: '-webkit-fill-available',
+    height: '100%',
     overflowY: 'auto',
     overflowX: 'hidden',
   },

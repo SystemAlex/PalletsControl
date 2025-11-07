@@ -17,7 +17,8 @@ import { UserFormData } from '../components/dialogs/UserDialog'; // Assuming thi
 export type SortColumn = 'username' | 'realname' | 'email' | 'isActive' | 'lastLoginAt';
 type SortDirection = 'ascending' | 'descending';
 
-export function useUserManagement(onCloseUserDialog: () => void) { // Accept onCloseUserDialog
+export function useUserManagement(onCloseUserDialog: () => void) {
+  // Accept onCloseUserDialog
   const queryClient = useQueryClient();
   const { dispatchToast } = useToastController('app-toaster');
   const { handleApiError } = useAuth();

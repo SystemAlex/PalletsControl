@@ -23,8 +23,6 @@ import {
   ToggleLeftRegular,
   ToggleRightRegular,
   MoneyRegular,
-  DismissCircleFilled,
-  CheckmarkCircleFilled,
   CheckmarkCircle24Filled,
   DismissCircle24Filled,
 } from '@fluentui/react-icons';

@@ -64,7 +64,7 @@ async function seed() {
     // 4. Insertar usuarios
     console.log('➕ Inserting new users...');
     await db.insert(schema.users).values(usersToInsert);
-    
+
     // 5. Insertar pago base para Empresa 1 (Permanente)
     console.log('💰 Inserting base payment for Empresa 1...');
     await db.insert(schema.pagos).values({

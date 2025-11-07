@@ -1,8 +1,14 @@
 import { db } from '../db';
 import { empresas, pagos } from '../db/schema';
-import { CreateEmpresaPayload, UpdateEmpresaPayload, EmpresaRecord, FrecuenciaPago } from '../../shared/types';
+import {
+  CreateEmpresaPayload,
+  UpdateEmpresaPayload,
+  EmpresaRecord,
+  FrecuenciaPago,
+} from '../../shared/types';
 import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from '../lib/errors';
-import { eq, ilike, or, sql, and, inArray } from 'drizzle-orm';
+import { eq, ilike, or, sql, and, inArray, type SQLWrapper, type SQL } from 'drizzle-orm';
+import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 import { addMonths, addYears, parseISO, startOfDay } from 'date-fns'; // Importar funciones de date-fns
 import { toZonedTime, formatInTimeZone } from 'date-fns-tz'; // Importar funciones conscientes de zona horaria de date-fns-tz
 
@@ -33,17 +39,17 @@ function getReferenceTimezone(countryCode: string | null): string {
   if (!countryCode) {
     return 'UTC'; // Fallback si no hay país
   }
-  
+
   try {
     const countryData = getCountry(countryCode);
     if (countryData && countryData.timezones.length > 0) {
       // Usamos la primera zona horaria como referencia.
       return countryData.timezones[0];
     }
-  } catch (e) {
+  } catch {
     console.warn(`Could not find timezone for country code: ${countryCode}`);
   }
-  
+
   return 'UTC'; // Fallback si el código de país no es válido o no tiene zonas horarias
 }
 
@@ -53,7 +59,6 @@ function calculatePaymentStatus(
   lastPaymentDate: string | null,
   countryCode: string | null, // Nuevo parámetro
 ): { lastPaymentDate: string | null; nextPaymentDate: string | null; isBlocked: boolean } {
-  
   if (!lastPaymentDate) {
     return {
       lastPaymentDate: null,
@@ -95,18 +100,22 @@ function calculatePaymentStatus(
 
   // 4. Formatear la próxima fecha de pago a YYYY-MM-DD en la zona horaria de la empresa.
   const nextPaymentDateStr = formatInTimeZone(nextDateInCompanyTimezone, timezone, 'yyyy-MM-dd');
-  
+
   // 5. Determinar el momento de bloqueo: inicio del próximo día de pago en UTC.
   // Obtener el inicio del día de `nextDateInCompanyTimezone` en su propia zona horaria.
   const startOfNextDateInCompanyTimezone = startOfDay(nextDateInCompanyTimezone);
 
   // Formatear esta fecha a una cadena ISO con el offset de la zona horaria,
   // y luego parsearla para obtener el instante UTC exacto.
-  const blockingMomentIsoString = formatInTimeZone(startOfNextDateInCompanyTimezone, timezone, "yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+  const blockingMomentIsoString = formatInTimeZone(
+    startOfNextDateInCompanyTimezone,
+    timezone,
+    "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
+  );
   const blockingMomentUtc = parseISO(blockingMomentIsoString);
-  
+
   const nowUtc = new Date();
-  
+
   const isBlocked = blockingMomentUtc.getTime() <= nowUtc.getTime();
 
   return {
@@ -118,25 +127,24 @@ function calculatePaymentStatus(
 
 // Función para obtener datos de pago y fusionarlos con los datos de la empresa
 async function fetchEmpresasWithPaymentStatus(
-  conditions: any[],
+  conditions: (SQLWrapper | undefined)[],
   limit: number,
   offset: number,
-  orderBy: any,
+  orderBy: SQL | SQL.Aliased<unknown> | AnyPgColumn,
 ): Promise<{ empresas: EmpresaRecord[]; totalCount: number }> {
-  
   // 1. Fetch companies
   const empresaListRaw = await db
     .select(selectEmpresaColumns)
     .from(empresas)
     .where(conditions.length > 0 ? or(...conditions) : undefined)
-    .orderBy(orderBy)
+    .orderBy(orderBy as SQL | SQL.Aliased<unknown> | AnyPgColumn)
     .limit(limit)
     .offset(offset);
 
   // 2. Fetch latest payment date for all fetched companies
-  const empresaIds = empresaListRaw.map(e => e.idEmpresa);
-  
-  let paymentMap = new Map<number, string>();
+  const empresaIds = empresaListRaw.map((e) => e.idEmpresa);
+
+  const paymentMap = new Map<number, string>();
 
   if (empresaIds.length > 0) {
     const latestPayments = await db
@@ -148,7 +156,7 @@ async function fetchEmpresasWithPaymentStatus(
       .where(inArray(pagos.idEmpresa, empresaIds))
       .groupBy(pagos.idEmpresa);
 
-    latestPayments.forEach(p => {
+    latestPayments.forEach((p) => {
       if (p.lastPaymentDate) {
         paymentMap.set(p.idEmpresa, p.lastPaymentDate);
       }
@@ -156,10 +164,10 @@ async function fetchEmpresasWithPaymentStatus(
   }
 
   // 3. Calculate status and merge
-  const empresaList: EmpresaRecord[] = empresaListRaw.map(e => {
+  const empresaList: EmpresaRecord[] = empresaListRaw.map((e) => {
     const lastPaymentDate = paymentMap.get(e.idEmpresa) || null;
     const status = calculatePaymentStatus(e.frecuenciaPago, lastPaymentDate, e.pais); // Pasar e.pais
-    
+
     return {
       ...e,
       lastPaymentDate: status.lastPaymentDate,
@@ -223,7 +231,7 @@ export async function createEmpresa(payload: CreateEmpresaPayload): Promise<Empr
   if (!newEmpresaRaw) {
     throw new Error('Fallo al crear la empresa.');
   }
-  
+
   // Calculate payment status for the newly created company (which has no payments yet)
   const status = calculatePaymentStatus(newEmpresaRaw.frecuenciaPago, null, newEmpresaRaw.pais); // Pasar newEmpresaRaw.pais
 
@@ -266,7 +274,7 @@ export async function getEmpresaById(idEmpresa: number): Promise<EmpresaRecord> 
   if (!empresaRaw[0]) {
     throw new NotFoundError('Empresa no encontrada.');
   }
-  
+
   // Fetch latest payment date
   const latestPayment = await db
     .select({
@@ -275,9 +283,13 @@ export async function getEmpresaById(idEmpresa: number): Promise<EmpresaRecord> 
     .from(pagos)
     .where(eq(pagos.idEmpresa, idEmpresa))
     .limit(1);
-    
+
   const lastPaymentDate = latestPayment[0]?.lastPaymentDate || null;
-  const status = calculatePaymentStatus(empresaRaw[0].frecuenciaPago, lastPaymentDate, empresaRaw[0].pais); // Pasar empresaRaw[0].pais
+  const status = calculatePaymentStatus(
+    empresaRaw[0].frecuenciaPago,
+    lastPaymentDate,
+    empresaRaw[0].pais,
+  ); // Pasar empresaRaw[0].pais
 
   return {
     ...empresaRaw[0],
@@ -299,7 +311,7 @@ export async function updateEmpresa(
   if (idEmpresa === 1 && payload.activo === false) {
     throw new UnauthorizedError('La empresa base (ID 1) no puede ser desactivada.');
   }
-  
+
   // Restricción: La empresa ID 1 debe ser permanente
   if (idEmpresa === 1 && payload.frecuenciaPago && payload.frecuenciaPago !== 'permanente') {
     throw new UnauthorizedError('La empresa base (ID 1) debe tener frecuencia de pago permanente.');
@@ -340,7 +352,7 @@ export async function updateEmpresa(
   if (!updatedEmpresaRaw) {
     throw new NotFoundError('Empresa no encontrada o no se pudo actualizar.');
   }
-  
+
   // Recalcular el estado de pago después de la actualización
   const latestPayment = await db
     .select({
@@ -349,9 +361,13 @@ export async function updateEmpresa(
     .from(pagos)
     .where(eq(pagos.idEmpresa, idEmpresa))
     .limit(1);
-    
+
   const lastPaymentDate = latestPayment[0]?.lastPaymentDate || null;
-  const status = calculatePaymentStatus(updatedEmpresaRaw.frecuenciaPago, lastPaymentDate, updatedEmpresaRaw.pais); // Pasar updatedEmpresaRaw.pais
+  const status = calculatePaymentStatus(
+    updatedEmpresaRaw.frecuenciaPago,
+    lastPaymentDate,
+    updatedEmpresaRaw.pais,
+  ); // Pasar updatedEmpresaRaw.pais
 
   return {
     ...updatedEmpresaRaw,
@@ -375,7 +391,7 @@ export async function deleteEmpresa(idEmpresa: number): Promise<EmpresaRecord> {
   if (!updatedEmpresaRaw) {
     throw new NotFoundError('Empresa no encontrada o no se pudo desactivar.');
   }
-  
+
   // Recalcular el estado de pago después de la desactivación
   const latestPayment = await db
     .select({
@@ -384,9 +400,13 @@ export async function deleteEmpresa(idEmpresa: number): Promise<EmpresaRecord> {
     .from(pagos)
     .where(eq(pagos.idEmpresa, idEmpresa))
     .limit(1);
-    
+
   const lastPaymentDate = latestPayment[0]?.lastPaymentDate || null;
-  const status = calculatePaymentStatus(updatedEmpresaRaw.frecuenciaPago, lastPaymentDate, updatedEmpresaRaw.pais); // Pasar updatedEmpresaRaw.pais
+  const status = calculatePaymentStatus(
+    updatedEmpresaRaw.frecuenciaPago,
+    lastPaymentDate,
+    updatedEmpresaRaw.pais,
+  ); // Pasar updatedEmpresaRaw.pais
 
   return {
     ...updatedEmpresaRaw,

@@ -6,10 +6,19 @@ import { fetchEmpresas, createEmpresa, updateEmpresa, deleteEmpresa } from '../a
 import { EmpresaRecord, CreateEmpresaPayload, UpdateEmpresaPayload } from '../../../shared/types';
 import { EmpresaFormData } from '../components/dialogs/EmpresaDialog';
 
-export type SortColumn = 'razonSocial' | 'cuit' | 'email' | 'activo' | 'fechaAlta' | 'lastPaymentDate' | 'nextPaymentDate' | 'isBlocked';
+export type SortColumn =
+  | 'razonSocial'
+  | 'cuit'
+  | 'email'
+  | 'activo'
+  | 'fechaAlta'
+  | 'lastPaymentDate'
+  | 'nextPaymentDate'
+  | 'isBlocked';
 type SortDirection = 'ascending' | 'descending';
 
-export function useEmpresaManagement(onCloseEmpresaDialog: () => void) { // Accept onCloseEmpresaDialog
+export function useEmpresaManagement(onCloseEmpresaDialog: () => void) {
+  // Accept onCloseEmpresaDialog
   const queryClient = useQueryClient();
   const { dispatchToast } = useToastController('app-toaster');
   const { handleApiError, user } = useAuth();

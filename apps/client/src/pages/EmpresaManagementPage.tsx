@@ -55,7 +55,9 @@ export default function EmpresaManagementPage() {
   const [isEmpresaDialogOpen, setEmpresaDialogOpen] = useState(false);
   const [empresaToEdit, setEmpresaToEdit] = useState<EmpresaFormData | null>(null);
   const [empresaToToggleStatus, setEmpresaToToggleStatus] = useState<EmpresaRecord | null>(null);
-  const [empresaToRegisterPayment, setEmpresaToRegisterPayment] = useState<EmpresaRecord | null>(null);
+  const [empresaToRegisterPayment, setEmpresaToRegisterPayment] = useState<EmpresaRecord | null>(
+    null,
+  );
 
   const handleCloseEmpresaDialog = useCallback(() => {
     setEmpresaDialogOpen(false);
@@ -231,7 +233,7 @@ export default function EmpresaManagementPage() {
           isDestructive={empresaToToggleStatus.activo}
         />
       )}
-      
+
       {empresaToRegisterPayment && (
         <PagoDialog
           open={!!empresaToRegisterPayment}

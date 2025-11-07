@@ -25,7 +25,7 @@ const useStyles = makeStyles({
     },
   },
   isPallet: {
-    height: '-webkit-fill-available',
+    height: '100%',
   },
   productName: {
     fontWeight: tokens.fontWeightSemibold,

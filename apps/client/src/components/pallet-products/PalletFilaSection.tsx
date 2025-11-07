@@ -21,16 +21,13 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     gap: '0px',
     scrollMarginTop: '54px',
-    minHeight: 'fit-content',
+    minHeight: '550px',
     overflowX: 'auto',
     marginInline: '6px',
     padding: '0px',
     borderTopRightRadius: '0px',
     borderTopLeftRadius: '0px',
     boxShadow: tokens.shadow2,
-    '@media(max-width: 600px)': {
-      minHeight: '540px',
-    },
   },
   columns: {
     display: 'flex',
